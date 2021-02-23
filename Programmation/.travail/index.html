@@ -43,7 +43,8 @@ var game = new Phaser.Game(config);
     {
         this.load.image('background', 'assets/background.png');
         this.load.image('light', 'assets/lumiere_principale.png');
-        this.load.image('plan_01', 'assets/Algue_01.png');
+        this.load.image('plan_01', 'assets/Recif_03.png');
+        this.load.image('plan_01_Flip', 'assets/Recif_03_Flip.png');
         this.load.image('plan_01_Flip', 'assets/Algue_01_Flip.png');
         this.load.image('plan_02', 'assets/Recif_02.png');
         this.load.image('plan_02_Flip', 'assets/Recif_02_Flip.png');
@@ -57,18 +58,18 @@ var game = new Phaser.Game(config);
     {
 
 
-    this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.25);
+    
     
     this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
-    this.add.image(0,100, 'plan_03').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(1280,100, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(0,200, 'plan_02').setOrigin(0).setScrollFactor(0.5);
-    this.add.image(1280,200, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.5);
+    this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(1280,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.5);
+    this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.5);
     player = this.physics.add.sprite(100, 450, 'sous-marin');
-    this.add.image(0,300, 'plan_01').setOrigin(0).setScrollFactor(1);
-    this.add.image(1280,300, 'plan_01_Flip').setOrigin(0).setScrollFactor(1);
-    
-    
+    this.add.image(0,350, 'plan_01').setOrigin(0).setScrollFactor(1);
+    this.add.image(1200,370, 'plan_01_Flip').setOrigin(0).setScrollFactor(1);
+    this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.25);
         
     //  Set the camera and physics bounds to be the size of 4x4 bg images
     this.cameras.main.setBounds(0, 0, 1280 * 2, 720);
