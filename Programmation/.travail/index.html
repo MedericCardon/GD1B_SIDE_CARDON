@@ -24,8 +24,8 @@ var config = {
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: { y: 0 },
-                debug: false
+                gravity: { y: 105 },
+                debug: true
             }
         },
         scene: {
@@ -37,6 +37,13 @@ var config = {
 
 var player;
 var cursors;
+var recif;
+var algues;
+var emitter;
+var emitter2;
+var particles;
+var particles2;
+var ennemi_bouteille;
 var game = new Phaser.Game(config);
 
     function preload ()
@@ -49,40 +56,87 @@ var game = new Phaser.Game(config);
         this.load.image('plan_02_Flip', 'assets/Recif_02_Flip.png');
         this.load.image('plan_03', 'assets/Recif_01.png');
         this.load.image('plan_03_Flip', 'assets/Recif_01_Flip.png');
+        this.load.image('station', 'assets/background_station.png');
         this.load.spritesheet('sous-marin', 'assets/spriteSheet.png', { frameWidth: 170.5, frameHeight: 180 });
         this.load.spritesheet('algues','assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
+        this.load.image('particule_bulle','assets/particule_bulle.png');
+        this.load.image('particules2', 'assets/particule_bulle.png');
+        this.load.image('ennemi_bouteille', 'assets/ennemi_bouteille.png');
     }
     
 
     function create ()
     {
-
- 
-    
-    
     this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
     this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
     this.add.image(1280,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.5);
-    this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.5);
-    this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.5);
-
-    player = this.physics.add.sprite(100, 450, 'sous-marin');
-    algues_2 = this.physics.add.sprite(3790,610, 'algues');
-    algues = this.physics.add.sprite(1280,610, 'algues');
+    this.add.image(2560, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
+    this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
     
-    this.add.image(0,559, 'plan_01').setOrigin(0).setScrollFactor(1);
+    this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
+    this.add.image(3840,-80, 'station').setOrigin(0).setScrollFactor(0.4);
+
+    particles = this.add.particles('particule_bulle');
+    emitter = particles.createEmitter({
+        x:10,
+        y:-50,
+        speed: 50,
+        scale: { start: 0.2, end: 0.5 },
+        blendMode: 'ADD',
+    });
+
+
+    particles2 = this.add.particles('particules2');
+    emitter2 = particles2.createEmitter({
+        x:-70,
+        y:10,
+        speed: 50,
+        scale: { start: 0.2, end: 0.5 },
+        blendMode: 'ADD',
+    });
+
+
+    player = this.physics.add.sprite(100, 200, 'sous-marin');
+    player.setDamping(false);
+    player.setDrag(100);
+    player.setMaxVelocity(300);
+
+    ennemi_bouteille = this.physics.add.staticGroup();
+    ennemi_bouteille = this.add.image(3000,300, 'ennemi_bouteille');
+    
+    this.tweens.add({
+        targets: ennemi_bouteille,
+        x: 2500,
+        y: 100,
+        duration: 3000,
+        yoyo: true,
+        delay: 100,
+        repeat: -1
+    })
+
+
+
+
+    recif = this.physics.add.staticGroup();
+    //recif.create(400, 568, 'plan_01').setScale(2).refreshBody();
+
+    recif.create(0,559, 'plan_01').setOrigin(0).setScrollFactor(1);
+    recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1);
+
+    
+
+    algues_2 = this.physics.add.sprite(3790,610, 'algues');
+    algues_3 = this.physics.add.sprite(6350,610, 'algues');
+    algues = this.physics.add.sprite(1280,610, 'algues');
     this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.25);
     this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.25);
-        
+    this.add.image(2560,0, 'light').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(3840,0, 'light').setOrigin(0).setScrollFactor(0.25);
+  
     //  Set the camera and physics bounds to be the size of 4x4 bg images
-    this.cameras.main.setBounds(0, 0, 1280 * 4, 720);
-    this.physics.world.setBounds(0, 0, 1280 * 4, 720);
-
-    //  Mash 4 images together to create our background
-    //this.add.image(0, 0, 'fond').setOrigin(0);
-    //this.add.image (1200, 0, 'fond').setOrigin(0);
-    
+    this.cameras.main.setBounds(0, 0, 1280 * 12, 720);
+    this.physics.world.setBounds(0, 0, 1280 * 12, 720);
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -104,22 +158,36 @@ var game = new Phaser.Game(config);
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('sous-marin', { start: 4, end: 6 }),
+            frames: this.anims.generateFrameNumbers('sous-marin', { start: 5, end: 7 }),
             frameRate: 20,
             repeat: 1
         });
 
+    text = this.add.text(10, 10, '', { font: '16px Courier', fill: '#00ff00' });
+    text.setScrollFactor(0);
+    
+    
     player.setCollideWorldBounds(true);
     this.cameras.main.startFollow(player, true, 0.05, 0.05);
+
+    
+    
+
+    
+    this.physics.add.collider(player,ennemi_bouteille);
+    this.physics.add.collider(player, recif);
+        
     }
 
     function update ()
     {
         // effet de gravité //
 
-        player.setVelocity(5); 
-        player.body.gravity.set(800,800);
+        //player.setVelocity(5); 
+        //player.body.gravity.set(0,0);
 
+        text.setText('Speed: ' + player.body.speed);
+        
         // Keyboard //
 
         if (cursors.left.isDown)
@@ -163,8 +231,8 @@ var game = new Phaser.Game(config);
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
 
-            player.x += 2 * axisH;
-            player.y += 2 * axisV;
+            player.x += 3 * axisH;
+            player.y += 3 * axisV;
 
             player.flipX = (axisH >= 0);
 
@@ -172,22 +240,41 @@ var game = new Phaser.Game(config);
                 player.anims.play('left', true);
                 algues.anims.play('algues_1',true);
                 algues_2.anims.play('algues_1',true);
+                algues_3.anims.play('algues_1',true);
+                this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
+                emitter.startFollow(player);
+                emitter2.startFollow(player);   
+            }
+            else{   
+                player.setAcceleration(0);
+                
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player);
+                
             }
             if (axisH <= -0.1){
                 player.anims.play('right', true);
                 player.flipX = (axisH = -1);
+                this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
+                emitter.startFollow(player);
+                emitter2.startFollow(player); 
             }
+            
             
             if (axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('right', true);
+                this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
+                emitter.startFollow(player);
+                emitter2.startFollow(player);
             }
+            
             if (axisV <= -0.1 && axisH >= 0.1){
                 player.anims.play('left', true);
+                this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
+                emitter.startFollow(player);
+                emitter2.startFollow(player);
             }
-            console.log(axisV);
-        
         }
-
     }
     
     
