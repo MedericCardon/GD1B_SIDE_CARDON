@@ -82,8 +82,8 @@ var game = new Phaser.Game(config);
 
     particles = this.add.particles('particule_bulle');
     emitter = particles.createEmitter({
-        x:10,
-        y:-50,
+        x:150,
+        y:10,
         speed: 50,
         scale: { start: 0.2, end: 0.5 },
         blendMode: 'ADD',
@@ -92,7 +92,7 @@ var game = new Phaser.Game(config);
 
     particles2 = this.add.particles('particules2');
     emitter2 = particles2.createEmitter({
-        x:-70,
+        x:-150,
         y:10,
         speed: 50,
         scale: { start: 0.2, end: 0.5 },
@@ -266,15 +266,15 @@ var game = new Phaser.Game(config);
 
             player.x += 2 * axisH;
             player.y += 2 * axisV;
+            player.flipX = (axisH >= -1);
+
 
             
 
-            player.flipX = (axisH >= -1);
 
             if (pad.X && axisH >= 0.1){
                 player.anims.play('bras_right', true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
-                emitter.startFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
                 player.setOffset(0,0);
@@ -286,7 +286,7 @@ var game = new Phaser.Game(config);
                 algues_2.anims.play('algues_1',true);
                 algues_3.anims.play('algues_1',true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
-                emitter.startFollow(player);
+                emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
@@ -294,50 +294,50 @@ var game = new Phaser.Game(config);
             if (pad.X && axisH <= -0.1){
                 player.anims.play('bras_left', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
-                emitter.startFollow(player);
+                emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
                 player.setOffset(10,0);
             }
             else if (axisH <= -0.1){
+                player.setOffset(185,0);
                 player.anims.play('right', true);
                 player.flipX = (axisH = -1);
-                this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
+                this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);  
                 emitter.startFollow(player);
-                emitter2.startFollow(player);
-                player.setSize(180,178);
-                player.setOffset(185,0);
+                emitter2.stopFollow(player);
+                
                 
             }
             if (pad.X && axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('bras_left', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
                 emitter.startFollow(player);
-                emitter2.startFollow(player);
+                emitter2.stopFollow(player);
             }
             else if (axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('right', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
                 emitter.startFollow(player);
-                emitter2.startFollow(player);
+                emitter2.stopFollow(player);
             }
             if (pad.X && axisV <= -0.1 && axisH >= 0.1){
                 player.anims.play('bras_right', true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
-                emitter.startFollow(player);
+                emitter.stopFollow(player);
                 emitter2.startFollow(player);
             }
             else if (axisV <= -0.1 && axisH >= 0.1){
                 player.anims.play('left', true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
-                emitter.startFollow(player);
+                emitter.stopFollow(player);
                 emitter2.startFollow(player);
             }
             if (axisV == 0 && axisH == 0 ){
                 player.setAcceleration(0);
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player); 
-            }  
+            } 
         } 
     }
     
