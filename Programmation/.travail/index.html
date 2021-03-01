@@ -104,7 +104,8 @@ var game = new Phaser.Game(config);
     player.setDamping(false);
     player.setDrag(100);
     player.setMaxVelocity(300);
-    player.setSize(24, 20);
+    player.setSize(180, 178);
+    player.setOffset(0,0);
 
     
 
@@ -275,6 +276,8 @@ var game = new Phaser.Game(config);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter.startFollow(player);
                 emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(0,0);
             }
             else if (axisH >= 0.1){
                 
@@ -284,20 +287,27 @@ var game = new Phaser.Game(config);
                 algues_3.anims.play('algues_1',true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter.startFollow(player);
-                emitter2.startFollow(player);  
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
             }
             if (pad.X && axisH <= -0.1){
                 player.anims.play('bras_left', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
                 emitter.startFollow(player);
                 emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(10,0);
             }
             else if (axisH <= -0.1){
                 player.anims.play('right', true);
                 player.flipX = (axisH = -1);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
                 emitter.startFollow(player);
-                emitter2.startFollow(player);  
+                emitter2.startFollow(player);
+                player.setSize(180,178);
+                player.setOffset(185,0);
+                
             }
             if (pad.X && axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('bras_left', true);
