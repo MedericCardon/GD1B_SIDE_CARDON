@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 105 },
-                debug: true
+                debug: false
             }
         },
         scene: {
@@ -36,7 +36,6 @@ var config = {
     };
 
 var player;
-
 var cursors;
 var recif;
 var algues;
@@ -45,6 +44,7 @@ var emitter2;
 var particles;
 var particles2;
 var ennemi_bouteille;
+var pad;
 
 var game = new Phaser.Game(config);
 
@@ -61,44 +61,48 @@ var game = new Phaser.Game(config);
         this.load.image('station', 'assets/background_station.png');
         this.load.spritesheet('sous-marin', 'assets/spriteSheet.png', { frameWidth: 367.392857, frameHeight: 178 });
         this.load.spritesheet('algues','assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
-        //this.load.spritesheet('sous-marin_bras','assets/spriteSheet_bras.png',{frameWidth: 366.88,frameHeight: 178});
         this.load.image('particule_bulle','assets/particule_bulle.png');
         this.load.image('particules2', 'assets/particule_bulle.png');
-        this.load.image('ennemi_bouteille', 'assets/ennemi_bouteille.png');
+        this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 101, frameHeight: 53});
     }
     
 
     function create ()
     {
+
     this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
     this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
     this.add.image(1280,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
     this.add.image(2560, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
     this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
     this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
-    
     this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
     this.add.image(3840,-80, 'station').setOrigin(0).setScrollFactor(0.4);
 
+    // Ajout particules bulle //
+
     particles = this.add.particles('particule_bulle');
     emitter = particles.createEmitter({
-        x:150,
+        x:170,
         y:10,
-        speed: 50,
+        speed: 30,
         scale: { start: 0.2, end: 0.5 },
         blendMode: 'ADD',
+        
     });
 
 
     particles2 = this.add.particles('particules2');
     emitter2 = particles2.createEmitter({
-        x:-150,
+        x:-170,
         y:10,
-        speed: 50,
+        speed: 30,
         scale: { start: 0.2, end: 0.5 },
         blendMode: 'ADD',
     });
 
+
+    // joueur //
 
     player = this.physics.add.sprite(100, 200, 'sous-marin');
     player.setDamping(false);
@@ -106,21 +110,24 @@ var game = new Phaser.Game(config);
     player.setMaxVelocity(300);
     player.setSize(180, 178);
     player.setOffset(0,0);
+    player.setCollideWorldBounds(true);
 
     
 
-    ennemi_bouteille = this.physics.add.staticGroup();
-    ennemi_bouteille = this.add.image(3000,300, 'ennemi_bouteille');
+    
+    ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
+    ennemi_bouteille.setSize(70,50);
+    ennemi_bouteille.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
     
     this.tweens.add({
         targets: ennemi_bouteille,
-        x: 2500,
-        y: 100,
-        duration: 3000,
+        //x: 2500,
+        y: 400,
+        duration: 2000,
         yoyo: true,
         delay: 100,
         repeat: -1
-    })
+    });
 
 
 
@@ -133,17 +140,20 @@ var game = new Phaser.Game(config);
 
     
 
-    algues_2 = this.physics.add.sprite(3790,610, 'algues');
-    algues_3 = this.physics.add.sprite(6350,610, 'algues');
-    algues = this.physics.add.sprite(1280,610, 'algues');
+    algues_2 = this.add.sprite(3790,610, 'algues');
+    algues_3 = this.add.sprite(6350,610, 'algues');
+    algues = this.add.sprite(1280,610, 'algues');
     this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.25);
     this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.25);
     this.add.image(2560,0, 'light').setOrigin(0).setScrollFactor(0.25);
     this.add.image(3840,0, 'light').setOrigin(0).setScrollFactor(0.25);
   
-    //  Set the camera and physics bounds to be the size of 4x4 bg images
+    //  Ajout de la caméra //
     this.cameras.main.setBounds(0, 0, 1280 * 12, 720);
     this.physics.world.setBounds(0, 0, 1280 * 12, 720);
+    this.cameras.main.startFollow(player, true, 0.05, 0.05);
+
+    // controles ( pad & clavier)
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -152,7 +162,14 @@ var game = new Phaser.Game(config);
     }),
 
     
+    // animations // 
 
+    this.anims.create({
+        key : 'ennemi_bouteille_01',
+        frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 3}),
+        frameRate : 5,
+        repeat: -1
+    });
 
     this.anims.create({
         key : 'algues_1',
@@ -160,8 +177,6 @@ var game = new Phaser.Game(config);
         frameRate : 1,
         repeat: -1
     });
-    
-    
     
     this.anims.create({
             key: 'left',
@@ -197,25 +212,19 @@ var game = new Phaser.Game(config);
     text = this.add.text(10, 10, '', { font: '16px Courier', fill: '#00ff00' });
     text.setScrollFactor(0);
     
-    
-    player.setCollideWorldBounds(true);
-    this.cameras.main.startFollow(player, true, 0.05, 0.05);
+    // collider & overlap //
 
-    
-    
+    this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
 
-    
-    this.physics.add.collider(player,ennemi_bouteille);
+    this.physics.add.collider(player, ennemi_bouteille, perd_vie, null, this);
+        
     this.physics.add.collider(player, recif);
         
     }
 
     function update ()
     {
-        // effet de gravité //
-
-        //player.setVelocity(5); 
-        //player.body.gravity.set(0,0);
+        
 
         text.setText('Speed: ' + player.body.speed);
         
@@ -255,10 +264,9 @@ var game = new Phaser.Game(config);
 
         // Gamepad //
 
-        var pad = this.input.gamepad.getPad(0);
+        pad = this.input.gamepad.getPad(0);
         
         
-
         if (pad.axes.length)
         {
             var axisH = pad.axes[0].getValue();
@@ -269,15 +277,13 @@ var game = new Phaser.Game(config);
             player.flipX = (axisH >= -1);
 
 
-            
-
-
             if (pad.X && axisH >= 0.1){
                 player.anims.play('bras_right', true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
                 player.setOffset(0,0);
+                ennemi_bouteille.anims.play('ennemi_bouteille_01',true);
             }
             else if (axisH >= 0.1){
                 
@@ -306,14 +312,13 @@ var game = new Phaser.Game(config);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);  
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
-                
-                
+                    
             }
             if (pad.X && axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('bras_left', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
-                emitter.startFollow(player);
-                emitter2.stopFollow(player);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
             }
             else if (axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('right', true);
@@ -338,10 +343,25 @@ var game = new Phaser.Game(config);
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player); 
             } 
-        } 
+        }
     }
     
     
+    function kill (player, ennemi_bouteille) 
+        {
+            if (pad.X){
+                ennemi_bouteille.destroy(true, true);
+            }
+        }
+
+    function perd_vie (player, ennemi_bouteille){
+
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.body.destroy(true,true);
+        //player.anims.play('turn');
+        //gameOver = true;
+    }
 
 </script>
 
