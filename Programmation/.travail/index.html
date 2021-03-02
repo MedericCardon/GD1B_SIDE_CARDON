@@ -85,7 +85,7 @@ var game = new Phaser.Game(config);
     emitter = particles.createEmitter({
         x:170,
         y:10,
-        speed: 30,
+        speed: 50,
         scale: { start: 0.2, end: 0.5 },
         blendMode: 'ADD',
         
@@ -96,7 +96,7 @@ var game = new Phaser.Game(config);
     emitter2 = particles2.createEmitter({
         x:-170,
         y:10,
-        speed: 30,
+        speed: 50,
         scale: { start: 0.2, end: 0.5 },
         blendMode: 'ADD',
     });
@@ -300,8 +300,8 @@ var game = new Phaser.Game(config);
             if (pad.X && axisH <= -0.1){
                 player.anims.play('bras_left', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
-                emitter.stopFollow(player);
-                emitter2.startFollow(player);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
                 player.setSize(350, 178);
                 player.setOffset(10,0);
             }
@@ -317,8 +317,8 @@ var game = new Phaser.Game(config);
             if (pad.X && axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('bras_left', true);
                 this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
-                emitter.stopFollow(player);
-                emitter2.startFollow(player);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
             }
             else if (axisV >= 0.1 && axisH <= -0.1){
                 player.anims.play('right', true);
@@ -356,7 +356,6 @@ var game = new Phaser.Game(config);
 
     function perd_vie (player, ennemi_bouteille){
 
-        this.physics.pause();
         player.setTint(0xff0000);
         player.body.destroy(true,true);
         //player.anims.play('turn');
