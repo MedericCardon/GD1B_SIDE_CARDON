@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 105 },
-                debug: false
+                debug: true
             }
         },
         scene: {
@@ -43,6 +43,10 @@ var emitter;
 var emitter2;
 var particles;
 var particles2;
+var particles_bidon;
+var emitter_bidon;
+var particles_bidon2;
+var emitter_bidon2;
 var ennemi_bouteille;
 var pad;
 var reparation1 = true;
@@ -51,6 +55,8 @@ var reparation3 = true;
 var playerPdv = 3;
 var playerInvincible = false;
 var timerInvulne;
+
+var keyD;
 
 var game = new Phaser.Game(config);
 
@@ -73,6 +79,13 @@ var game = new Phaser.Game(config);
 
         this.load.image('reparation','assets/Cle.png');
         this.load.image('HUD','assets/HUD_sous_marin.png');
+
+        this.load.image('tuyaux','assets/Tuyaux.png');
+        this.load.image('bidons','assets/bidons.png');
+
+        this.load.image('particules_bidon', 'assets/particules_bidon.png');
+        
+
     }
     
 
@@ -87,6 +100,34 @@ var game = new Phaser.Game(config);
     this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
     this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
     this.add.image(3840,-80, 'station').setOrigin(0).setScrollFactor(0.4);
+
+
+    particles_bidon = this.add.particles('particules_bidon');
+    var emitter_bidon = particles_bidon.createEmitter({
+        x: 14500,
+        y: 500,
+        speed: 100,
+        frequency: 150,
+        lifespan: 20000,
+        blendMode:'ADD',
+    });
+
+    particles_bidon2 = this.add.particles('particules_bidon');
+    var emitter_bidon2 = particles_bidon2.createEmitter({
+        x: 14500,
+        y: 500,
+        speed: 100,
+        frequency: 150,
+        lifespan: 20000,
+        blendMode:'ADD',
+    });
+
+    this.add.image( 5950,350, 'bidons').setOrigin(0).setScrollFactor(0.4);
+    
+    this.add.image( 6000,0, 'tuyaux').setOrigin(0).setScrollFactor(0.4);
+
+   
+    
 
     timerInvulne = this.time.addEvent({
          delay: 2000
@@ -118,6 +159,11 @@ var game = new Phaser.Game(config);
     });
 
 
+    // Ajout particules bidons //
+
+    
+
+
     // joueur //
 
     player = this.physics.add.sprite(100, 200, 'sous-marin');
@@ -129,7 +175,7 @@ var game = new Phaser.Game(config);
     player.setCollideWorldBounds(true);
 
     
-
+    
     
     ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
     ennemi_bouteille.setSize(70,50);
@@ -153,13 +199,18 @@ var game = new Phaser.Game(config);
     recif = this.physics.add.staticGroup();
     //recif.create(400, 568, 'plan_01').setScale(2).refreshBody();
 
-    recif.create(0,559, 'plan_01').setOrigin(0).setScrollFactor(1);
+    recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1);
     recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1);
+    recif.create(9671,560, 'plan_01').setOrigin(0).setScrollFactor(1);
+    recif.create(14227,560, 'plan_01').setOrigin(0).setScrollFactor(1);
 
     
 
     algues_2 = this.add.sprite(3790,610, 'algues');
     algues_3 = this.add.sprite(6350,610, 'algues');
+    algues_4 = this.add.sprite(8910, 610, 'algues');
+    algues_5 = this.add.sprite(11470, 610, 'algues');
+
     algues = this.add.sprite(1280,610, 'algues');
     this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.25);
     this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.25);
@@ -192,7 +243,7 @@ var game = new Phaser.Game(config);
     // controles ( pad & clavier)
 
     cursors = this.input.keyboard.createCursorKeys();
-    // _______: this.input.keyboard.addKey('A'); //
+    keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); 
 
     this.input.gamepad.on('down', function (pad, button, index) {
         return;
@@ -255,7 +306,7 @@ var game = new Phaser.Game(config);
 
     this.physics.add.collider(player, ennemi_bouteille,onHit, perd_vie, null, this);
         
-    this.physics.add.collider(player, recif);
+    //this.physics.add.collider(player, recif);
         
     }
 
@@ -267,7 +318,7 @@ var game = new Phaser.Game(config);
         
         // Keyboard //
 
-        if (cursors.left.isDown)
+        if (keyD.isDown)
         {
             player.setVelocityX(-150);
             player.anims.play('left', true);
@@ -309,7 +360,7 @@ var game = new Phaser.Game(config);
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
 
-            player.x += 2 * axisH;
+            player.x += 10 * axisH;
             player.y += 2 * axisV;
             player.flipX = (axisH >= -1);
 
@@ -328,6 +379,8 @@ var game = new Phaser.Game(config);
                 algues.anims.play('algues_1',true);
                 algues_2.anims.play('algues_1',true);
                 algues_3.anims.play('algues_1',true);
+                algues_4.anims.play('algues_1',true);
+                algues_5.anims.play('algues_1',true);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
