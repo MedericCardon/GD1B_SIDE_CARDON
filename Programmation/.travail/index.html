@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 105 },
-                debug: true
+                debug: false
             }
         },
         scene: {
@@ -104,21 +104,21 @@ var game = new Phaser.Game(config);
 
     particles_bidon = this.add.particles('particules_bidon');
     var emitter_bidon = particles_bidon.createEmitter({
-        x: 14500,
-        y: 500,
+        x: 2100,
+        y: 720,
         speed: 100,
         frequency: 150,
-        lifespan: 20000,
+        lifespan: 40000,
         blendMode:'ADD',
     });
 
     particles_bidon2 = this.add.particles('particules_bidon');
     var emitter_bidon2 = particles_bidon2.createEmitter({
-        x: 14500,
-        y: 500,
+        x: 5000,
+        y: 720,
         speed: 100,
         frequency: 150,
-        lifespan: 20000,
+        lifespan: 40000,
         blendMode:'ADD',
     });
 
@@ -322,13 +322,14 @@ var game = new Phaser.Game(config);
         {
             player.setVelocityX(-150);
             player.anims.play('left', true);
+
             
             
         }
         else if (cursors.right.isDown)
         {
             player.setVelocityX(150);
-            player.anims.play('right', true);
+            player.anims.play('right', true);d
             
         }
 
@@ -360,7 +361,7 @@ var game = new Phaser.Game(config);
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
 
-            player.x += 10 * axisH;
+            player.x += 2 * axisH;
             player.y += 2 * axisV;
             player.flipX = (axisH >= -1);
 
