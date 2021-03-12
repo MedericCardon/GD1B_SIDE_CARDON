@@ -94,6 +94,9 @@ var game = new Phaser.Game(config);
         this.load.image('particules_bidon', 'assets/particules_bidon.png');
 
         this.load.image('haut_grotte','assets/assets_grotte/Entree_grotte-assets/haut_grotte.png');
+        this.load.image('bas_grotte','assets/assets_grotte/Entree_grotte-assets/bas_grotte.png');
+        this.load.image('entree_grotte','assets/assets_grotte/Entree_grotte-assets/entree_grotte.png');
+        this.load.image('fond_grotte','assets/assets_grotte/Entree_grotte-assets/fond_grotte.png');
         
 
     }
@@ -146,7 +149,7 @@ var game = new Phaser.Game(config);
     });
 
     
-    
+    this.add.image( 15100,50, 'fond_grotte').setOrigin(0).setScrollFactor(1);
 
     // Ajout particules bulle //
 
@@ -171,8 +174,9 @@ var game = new Phaser.Game(config);
     });
 
 
-    // Ajout particules bidons //
+    //fond  grotte //
 
+    
     
 
 
@@ -214,29 +218,33 @@ var game = new Phaser.Game(config);
     recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
     recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
     recif.create(9671,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
-    recif.create(14787,580,'petit_recif').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+    recif.create(14687,580,'petit_recif').setOrigin(0).setScrollFactor(1).setOffset(0,210);
     //recif.create(14227,560, 'plan_01').setOrigin(0).setScrollFactor(1);//
 
     recif_block = this.physics.add.staticGroup();
-    recif.create(1280,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(2560,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(3840,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(5120,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(6400,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(7680,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(10240,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    //recif.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(1280,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(2560,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(3840,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(5120,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(6400,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(7680,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(10240,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1);
+    
+    
 
 
 
     grotte = this.physics.add.staticGroup();
 
     grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1);
+    grotte.create(15351,678,'bas_grotte').setOrigin(0).setScrollFactor(1);
+    grotte.create(15100,100,'entree_grotte').setOrigin(0).setScrollFactor(1);
     
 
     algues_2 = this.add.sprite(3790,610, 'algues');
@@ -417,8 +425,8 @@ var game = new Phaser.Game(config);
         {
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
-            player.x += 2 * axisH;// modifier //
-            player.y += 2 * axisV;
+            player.x += 15 * axisH;// modifier //
+            player.y += 15 * axisV;
             player.flipX = (axisH >= -1);
 
 
