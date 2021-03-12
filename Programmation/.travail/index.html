@@ -108,11 +108,7 @@ var game = new Phaser.Game(config);
 
     particles_bidon = this.add.particles('particules_bidon');
     var emitter_bidon = particles_bidon.createEmitter({
-<<<<<<< HEAD
-        x: 14500,
-=======
         x: 2100,
->>>>>>> 886e51733efb5a547e549b6527b435a03b4ae8bf
         y: 720,
         speed: 100,
         frequency: 150,
@@ -122,17 +118,12 @@ var game = new Phaser.Game(config);
 
     particles_bidon2 = this.add.particles('particules_bidon');
     var emitter_bidon2 = particles_bidon2.createEmitter({
-<<<<<<< HEAD
         x: 3500,
         y: 720,
         speed: 100,
         frequency: 100,
-=======
-        x: 5000,
-        y: 720,
         speed: 100,
         frequency: 150,
->>>>>>> 886e51733efb5a547e549b6527b435a03b4ae8bf
         lifespan: 40000,
         blendMode:'ADD',
     });
@@ -398,12 +389,7 @@ var game = new Phaser.Game(config);
         {
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
-
-<<<<<<< HEAD
-            player.x += 10 * axisH;// modifier //
-=======
-            player.x += 2 * axisH;
->>>>>>> 886e51733efb5a547e549b6527b435a03b4ae8bf
+            player.x += 2 * axisH;// modifier //
             player.y += 2 * axisV;
             player.flipX = (axisH >= -1);
 
