@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 105 },
-                debug: false
+                debug: true
             }
         },
         scene: {
@@ -38,6 +38,7 @@ var config = {
 var player;
 var cursors;
 var recif;
+var grotte;
 var algues;
 var emitter;
 var emitter2;
@@ -69,6 +70,7 @@ var game = new Phaser.Game(config);
         this.load.image('background', 'assets/background.png');
         this.load.image('light', 'assets/lumiere_principale.png');
         this.load.image('plan_01', 'assets/Recif_03.png');
+        this.load.image('petit_recif','assets/assets_grotte/Entree_grotte-assets/petit_recif.png')
         //this.load.image('plan_01_Flip', 'assets/Algue_01_Flip.png');
         this.load.image('plan_02', 'assets/Recif_02.png');
         this.load.image('plan_02_Flip', 'assets/Recif_02_Flip.png');
@@ -88,6 +90,8 @@ var game = new Phaser.Game(config);
         this.load.image('bidons','assets/bidons.png');
 
         this.load.image('particules_bidon', 'assets/particules_bidon.png');
+
+        this.load.image('haut_grotte','assets/assets_grotte/Entree_grotte-assets/haut_grotte.png');
         
 
     }
@@ -203,13 +207,18 @@ var game = new Phaser.Game(config);
     
 
     recif = this.physics.add.staticGroup();
-    //recif.create(400, 568, 'plan_01').setScale(2).refreshBody();
-
+    //recif.create(400, 568, 'plan_01').setScale(2).refreshBody();//
+    
     recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1);
     recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1);
     recif.create(9671,560, 'plan_01').setOrigin(0).setScrollFactor(1);
-    recif.create(14227,560, 'plan_01').setOrigin(0).setScrollFactor(1);
+    recif.create(14787,580,'petit_recif').setOrigin(0).setScrollFactor(1);
+    //recif.create(14227,560, 'plan_01').setOrigin(0).setScrollFactor(1);//
 
+
+    grotte = this.physics.add.staticGroup();
+
+    grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1);
     
 
     algues_2 = this.add.sprite(3790,610, 'algues');
@@ -242,8 +251,8 @@ var game = new Phaser.Game(config);
     
   
     //  Ajout de la caméra //
-    this.cameras.main.setBounds(0, 0, 1280 * 12, 720);
-    this.physics.world.setBounds(0, 0, 1280 * 12, 720);
+    this.cameras.main.setBounds(0, 0, 1280 * 20, 720);
+    this.physics.world.setBounds(0, 0, 1280 * 20, 1440);
     this.cameras.main.startFollow(player, true, 0.05, 0.05);
 
     // controles ( pad & clavier)
@@ -312,12 +321,13 @@ var game = new Phaser.Game(config);
     text.setScrollFactor(0);
     
     // collider & overlap //
+    this.physics.add.collider(player, recif);
 
     this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
 
     this.physics.add.collider(player, ennemi_bouteille,onHit, perd_vie, null, this);
         
-    //this.physics.add.collider(player, recif);
+    
         
     }
 
