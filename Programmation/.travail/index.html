@@ -181,7 +181,6 @@ var game = new Phaser.Game(config);
 
 
     // joueur //
-
     player = this.physics.add.sprite(100, 200, 'sous-marin');
     player.setDamping(false);
     player.setDrag(100);
@@ -191,7 +190,7 @@ var game = new Phaser.Game(config);
     player.setCollideWorldBounds(true);
 
     
-    
+    this.add.image(15100,100,'entree_grotte').setOrigin(0).setScrollFactor(1);
     
     ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
     ennemi_bouteille.setSize(70,50);
@@ -218,7 +217,7 @@ var game = new Phaser.Game(config);
     recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
     recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
     recif.create(9671,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
-    recif.create(14687,580,'petit_recif').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+    recif.create(14687,580,'petit_recif').setOrigin(0).setScrollFactor(1).setSize(3100,200).setOffset(-2100,260);
     //recif.create(14227,560, 'plan_01').setOrigin(0).setScrollFactor(1);//
 
     recif_block = this.physics.add.staticGroup();
@@ -233,8 +232,8 @@ var game = new Phaser.Game(config);
     recif_block.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
     recif_block.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
     recif_block.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(2000,600).setOffset(0,0);
+    recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1)
     
     
 
@@ -242,9 +241,11 @@ var game = new Phaser.Game(config);
 
     grotte = this.physics.add.staticGroup();
 
-    grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1);
-    grotte.create(15351,678,'bas_grotte').setOrigin(0).setScrollFactor(1);
-    grotte.create(15100,100,'entree_grotte').setOrigin(0).setScrollFactor(1);
+    grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
+    grotte.create(15351,678,'bas_grotte').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
+    
+            
+    
     
 
     algues_2 = this.add.sprite(3790,610, 'algues');
@@ -348,6 +349,8 @@ var game = new Phaser.Game(config);
     
     // collider & overlap //
     this.physics.add.collider(player, recif);
+    this.physics.add.collider(player, grotte);
+    this.physics.add.collider(player, recif_block);
 
     this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
 
@@ -425,8 +428,8 @@ var game = new Phaser.Game(config);
         {
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
-            player.x += 15 * axisH;// modifier //
-            player.y += 15 * axisV;
+            player.x += 2 * axisH;// modifier //
+            player.y += 2 * axisV;
             player.flipX = (axisH >= -1);
 
 
