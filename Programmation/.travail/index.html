@@ -38,6 +38,7 @@ var config = {
 var player;
 var cursors;
 var recif;
+var recif_block;
 var grotte;
 var algues;
 var emitter;
@@ -70,6 +71,7 @@ var game = new Phaser.Game(config);
         this.load.image('background', 'assets/background.png');
         this.load.image('light', 'assets/lumiere_principale.png');
         this.load.image('plan_01', 'assets/Recif_03.png');
+        this.load.image('recif_block', 'assets/Recif_block.png');
         this.load.image('petit_recif','assets/assets_grotte/Entree_grotte-assets/petit_recif.png')
         //this.load.image('plan_01_Flip', 'assets/Algue_01_Flip.png');
         this.load.image('plan_02', 'assets/Recif_02.png');
@@ -209,11 +211,27 @@ var game = new Phaser.Game(config);
     recif = this.physics.add.staticGroup();
     //recif.create(400, 568, 'plan_01').setScale(2).refreshBody();//
     
-    recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1);
-    recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1);
-    recif.create(9671,560, 'plan_01').setOrigin(0).setScrollFactor(1);
-    recif.create(14787,580,'petit_recif').setOrigin(0).setScrollFactor(1);
+    recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+    recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+    recif.create(9671,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+    recif.create(14787,580,'petit_recif').setOrigin(0).setScrollFactor(1).setOffset(0,210);
     //recif.create(14227,560, 'plan_01').setOrigin(0).setScrollFactor(1);//
+
+    recif_block = this.physics.add.staticGroup();
+    recif.create(1280,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(2560,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(3840,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(5120,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(6400,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(7680,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(10240,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    recif.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+    //recif.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+
 
 
     grotte = this.physics.add.staticGroup();
@@ -251,7 +269,7 @@ var game = new Phaser.Game(config);
     
   
     //  Ajout de la caméra //
-    this.cameras.main.setBounds(0, 0, 1280 * 20, 720);
+    this.cameras.main.setBounds(0, 0, 1280 * 20, 1440);
     this.physics.world.setBounds(0, 0, 1280 * 20, 1440);
     this.cameras.main.startFollow(player, true, 0.05, 0.05);
 
