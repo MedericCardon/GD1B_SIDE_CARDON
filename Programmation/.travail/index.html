@@ -50,6 +50,7 @@ var emitter_bidon;
 var particles_bidon2;
 var emitter_bidon2;
 var ennemi_bouteille;
+var waste_monster;
 var pad;
 var reparation1 = true;
 var reparation2 = true;
@@ -81,6 +82,7 @@ var game = new Phaser.Game(config);
         this.load.image('station', 'assets/background_station.png');
         this.load.spritesheet('sous-marin', 'assets/spriteSheet.png', { frameWidth: 367.392857, frameHeight: 178 });
         this.load.spritesheet('algues','assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
+        this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.75, frameHeight: 391});
         this.load.image('particule_bulle','assets/particule_bulle.png');
         this.load.image('particules2', 'assets/particule_bulle.png');
         this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 101, frameHeight: 53});
@@ -94,12 +96,15 @@ var game = new Phaser.Game(config);
         this.load.image('particules_bidon', 'assets/particules_bidon.png');
 
         this.load.image('haut_grotte','assets/assets_grotte/Entree_grotte-assets/haut_grotte.png');
-        this.load.image('bas_grotte','assets/assets_grotte/Entree_grotte-assets/bas_grotte.png');
+        this.load.image('haut_grotte_flip','assets/assets_grotte/Entree_grotte-assets/haut_grotte_flip.png');
+        this.load.image('bas_grotte_01','assets/assets_grotte/Entree_grotte-assets/bas_grotte_01.png');
+        this.load.image('bas_grotte_02','assets/assets_grotte/Entree_grotte-assets/bas_grotte_02.png');
         this.load.image('entree_grotte','assets/assets_grotte/Entree_grotte-assets/entree_grotte.png');
         this.load.image('fond_grotte','assets/assets_grotte/Entree_grotte-assets/fond_grotte.png');
         this.load.image('block_central','assets/assets_grotte/Entree_grotte-assets/block_central_grotte.png');
         this.load.image('pilier_01','assets/assets_grotte/Entree_grotte-assets/pilier_grotte_01.png');
         this.load.image('pilier_02','assets/assets_grotte/Entree_grotte-assets/pilier_grotte_02.png');
+        this.load.image('pilier_03','assets/assets_grotte/Entree_grotte-assets/pilier_grotte_03.png');
 
         
 
@@ -153,7 +158,16 @@ var game = new Phaser.Game(config);
     });
 
     
-    this.add.image( 15100,50, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 15200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 15200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 15200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 16200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 16200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 16200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 17200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 17200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 17200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    
 
     // Ajout particules bulle //
 
@@ -193,10 +207,15 @@ var game = new Phaser.Game(config);
     player.setOffset(0,0);
     player.setCollideWorldBounds(true);
 
+
+    waste_monster = this.physics.add.sprite(500, 500, 'waste_monster');
+    waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
+    waste_monster.setCollideWorldBounds(true);
     
-    this.add.image(15100,100,'entree_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image(15700,100,'pilier_01').setOrigin(0).setScrollFactor(1);
-    this.add.image(16000,600,'pilier_02').setOrigin(0).setScrollFactor(1);
+    this.add.image(15100,50,'entree_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image(16355,60,'pilier_01').setOrigin(0).setScrollFactor(1);
+    //this.add.image(17000,600,'pilier_02').setOrigin(0).setScrollFactor(1);
+    this.add.image(17285,87,'pilier_03').setOrigin(0).setScrollFactor(1);
     
     ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
     ennemi_bouteille.setSize(70,50);
@@ -240,6 +259,8 @@ var game = new Phaser.Game(config);
     recif_block.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
     recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(2000,600).setOffset(0,0);
     recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1)
+    recif_block.create(17920,1800, 'recif_block').setOrigin(1).setScrollFactor(1)
+
     
     
 
@@ -248,8 +269,10 @@ var game = new Phaser.Game(config);
     grotte = this.physics.add.staticGroup();
 
     grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
-    grotte.create(15351,678,'bas_grotte').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
-    grotte.create(15900,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(200,30).setOffset(0,0);
+    grotte.create(16637,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
+    grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
+    grotte.create(16630,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
+    grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(200,30).setOffset(0,0);
     
             
     
@@ -305,6 +328,13 @@ var game = new Phaser.Game(config);
 
     
     // animations // 
+
+    this.anims.create({
+        key: 'waste_monster',
+        frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 3}),
+        frameRate : 7,
+        repeat: -1
+    })
 
     this.anims.create({
         key : 'ennemi_bouteille_01',
@@ -435,8 +465,8 @@ var game = new Phaser.Game(config);
         {
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
-            player.x += 2 * axisH;// modifier //
-            player.y += 1 * axisV;
+            player.x +=  15* axisH;// modifier 2//
+            player.y += 15 * axisV;// modifier 1//
             player.flipX = (axisH >= -1);
 
 
@@ -454,6 +484,7 @@ var game = new Phaser.Game(config);
                 
                 player.anims.play('left',true);
                 player.setVelocityX(200);
+                waste_monster.anims.play('waste_monster',true);
                 algues.anims.play('algues_1',true);
                 algues_2.anims.play('algues_1',true);
                 algues_3.anims.play('algues_1',true);
