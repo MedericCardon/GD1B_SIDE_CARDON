@@ -24,8 +24,8 @@ var config = {
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: { y: 70 },//105
-                debug: false
+                gravity: { y: 90 },//105
+                debug: true
             }
         },
         scene: {
@@ -80,7 +80,8 @@ var game = new Phaser.Game(config);
         this.load.image('plan_03', 'assets/Recif_01.png');
         this.load.image('plan_03_Flip', 'assets/Recif_01_Flip.png');
         this.load.image('station', 'assets/background_station.png');
-        this.load.spritesheet('sous-marin', 'assets/spriteSheet.png', { frameWidth: 367.392857, frameHeight: 178 });
+        this.load.spritesheet('sous-marin', 'assets/spriteSheet_sous_marin.png', { frameWidth: 183.5, frameHeight: 178 });
+        this.load.spritesheet('sous-marin_bras', 'assets/spriteSheet.png', { frameWidth: 367.392857, frameHeight: 178 });
         this.load.spritesheet('algues','assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
         this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.75, frameHeight: 391});
         this.load.image('particule_bulle','assets/particule_bulle.png');
@@ -199,10 +200,10 @@ var game = new Phaser.Game(config);
 
 
     // joueur //
-    player = this.physics.add.sprite(100, 200, 'sous-marin');
+    player = this.physics.add.sprite(17000, 400, 'sous-marin');//depart 100, 200//
     player.setDamping(false);
-    player.setDrag(50);
-    player.setMaxVelocity(300);
+    player.setDrag(80);
+    player.setMaxVelocity(280);
     player.setSize(180, 178);
     player.setOffset(0,0);
     player.setCollideWorldBounds(true);
@@ -215,7 +216,7 @@ var game = new Phaser.Game(config);
     this.add.image(15100,50,'entree_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image(16355,60,'pilier_01').setOrigin(0).setScrollFactor(1);
     //this.add.image(17000,600,'pilier_02').setOrigin(0).setScrollFactor(1);
-    this.add.image(17285,87,'pilier_03').setOrigin(0).setScrollFactor(1);
+    
     
     ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
     ennemi_bouteille.setSize(70,50);
@@ -260,6 +261,8 @@ var game = new Phaser.Game(config);
     recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(2000,600).setOffset(0,0);
     recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1)
     recif_block.create(17920,1800, 'recif_block').setOrigin(1).setScrollFactor(1)
+    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1)
+    recif_block.create(20480,2100, 'recif_block').setOrigin(1).setScrollFactor(1)
 
     
     
@@ -271,8 +274,11 @@ var game = new Phaser.Game(config);
     grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
     grotte.create(16637,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
     grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
-    grotte.create(16630,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
-    grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(200,30).setOffset(0,0);
+    grotte.create(17911,970,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,315);
+    grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);
+    grotte.create(19192,1191,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(2560,100).setOffset(-550,275);
+    grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1080,30).setOffset(820,382);
+    grotte.create(17285,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(30,500).setOffset(240,300);
     
             
     
@@ -366,14 +372,14 @@ var game = new Phaser.Game(config);
 
         this.anims.create({
             key: 'bras_right',
-            frames: this.anims.generateFrameNumbers('sous-marin', { start: 10, end: 18 }),
+            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 10, end: 18 }),
             frameRate: 25,
             repeat: 0
         });
 
         this.anims.create({
             key: 'bras_left',
-            frames: this.anims.generateFrameNumbers('sous-marin', { start: 19, end: 27 }),
+            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 19, end: 27 }),
             frameRate: 25,
             repeat: 0
         });
@@ -392,10 +398,18 @@ var game = new Phaser.Game(config);
     this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
 
     this.physics.add.collider(player, ennemi_bouteille,onHit, perd_vie, null, this);
+
+    var collider = this.physics.add.collider(player, grotte, function (playerOnGrotte)
+    {
+        playerOnGrotte.body.stop();
+
+        this.physics.world.removeCollider(collider);
+    }, null, this);
+}
         
     
         
-    }
+    
 
     function update ()
     {
@@ -465,12 +479,12 @@ var game = new Phaser.Game(config);
         {
             var axisH = pad.axes[0].getValue();
             var axisV = pad.axes[1].getValue();
-            player.x +=  15* axisH;// modifier 2//
-            player.y += 15 * axisV;// modifier 1//
+            //player.x += 2 * axisH;// modifier 2//
+            //player.y += 1 * axisV;// modifier 1//
             player.flipX = (axisH >= -1);
 
 
-            if (pad.X && axisH >= 0.1){
+           /* if (pad.X && axisH >= 0.1){
                 player.anims.play('bras_right', true);
                 player.setVelocityX(200);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
@@ -517,51 +531,43 @@ var game = new Phaser.Game(config);
                 emitter2.stopFollow(player);       
             }
 
-            /*if (pad.X && axisV == 1){
-                player.anims.play('bras_right', true);
-                //player.setVelocityY(200);
-                this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
+            if (pad.X && axisV >= 0.1){
+                
+                player.setVelocityY(100);
+                //this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter2.startFollow(player);
-                player.setSize(350, 178);
-                player.setOffset(0,0);
-                ennemi_bouteille.anims.play('ennemi_bouteille_01',true);
+                
+                
             }
                 
             
-            else if (axisV == 1){
+            else if (axisV >= 0.1){
                 
                 player.anims.play('left',true);
-                //player.setVelocityY(200);
-                algues.anims.play('algues_1',true);
-                algues_2.anims.play('algues_1',true);
-                algues_3.anims.play('algues_1',true);
-                algues_4.anims.play('algues_1',true);
-                algues_5.anims.play('algues_1',true);
-                this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
+                player.setVelocityY(100);
+                //this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
-                player.setSize(180, 178);
-                player.setOffset(0,0);
+                
             }
 
-            if (pad.X && axisV == -1){
+            if (pad.X && axisV <= -0.1){
                 player.anims.play('bras_right', true);
-                //player.setVelocityY(-200);
-                this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
+                player.setVelocityY(-100);
+                //this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
-                player.setSize(350, 178);
-                player.setOffset(10,0);
+                
             }
             
-            else if (axisV == -1){
-                player.setOffset(185,0);
-                //player.setVelocityY(-200);
+            else if (axisV <= -0.1){
+                player.setVelocityY(-100);
                 player.anims.play('left', true);
-                this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);  
+                //this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);  
                 emitter.stopFollow(player);
-                emitter2.startFollow(player);     
-            }*/
+                emitter2.startFollow(player);
+                   
+            }
 
             if (pad.X && axisV >= 0.1 && axisH >= 0.1){
                 player.setVelocityX(200);
@@ -628,12 +634,166 @@ var game = new Phaser.Game(config);
                 this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
+            }*/
+
+            if (pad.X && axisH >= 0.1){
+                player.setAccelerationX(300);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(0,0);
+                player.anims.play('bras_right', true);
             }
+            else if(axisH >= 0.1){
+                player.anims.play('left', true);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+
+
+            if (pad.X && axisH <= -0.1){
+                player.setAccelerationX(-300);
+                emitter.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(0,0);
+                player.anims.play('bras_left', true);
+            }
+
+            else if(axisH <= -0.1){
+                player.setAccelerationX(-300);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(185,0);
+                
+            }
+
+            if(axisV >= 0.8 && axisH == 0){
+                player.setAccelerationY(200);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                if (player.anims.play('right')){
+                    player.setOffset(185,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+                
+            }
+            if(axisV <= -0.8 && axisH ==0){
+                player.setAccelerationY(-200);
+                player.setSize(180, 178);
+                player.setOffset(185,0);
+                if (player.anims.play('right')){
+                    player.setOffset(185,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+                else if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+            }
+
+
+            if (pad.X && axisH >= 0.1 && axisV <=-0.3){
+                player.setAccelerationX(300);
+                player.setAccelerationY(-150);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(0,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (axisH >= 0.1 && axisV <=-0.3){
+                player.setAccelerationX(300);
+                player.setAccelerationY(-150);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                
+            }
+
+            if (pad.X && axisH >= 0.1 && axisV >= 0.3){
+                player.setAccelerationX(300);
+                player.setAccelerationY(150);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(0,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (axisH >= 0.1 && axisV >= 0.3){
+                player.setAccelerationX(300);
+                player.setAccelerationY(150);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            if (pad.X && axisH <= -0.1 && axisV <=-0.3){
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-150);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player)
+                player.setSize(350, 178);
+                player.setOffset(10,0);
+                player.anims.play('bras_left', true);
+            }
+
+            else if (axisH <= -0.1 && axisV <=-0.3){
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-150);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(185,0);
+            }
+
+            if (pad.X && axisH <= -0.1 && axisV >= 0.3){
+                player.setAccelerationX(-300);
+                player.setAccelerationY(150);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(10,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (axisH <= -0.1 && axisV >= 0.3){
+                player.setAccelerationX(-300);
+                player.setAccelerationY(150);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(185,0);
+            }
+
             if (axisV == 0 && axisH == 0 ){
                 player.setAcceleration(0);
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player); 
-            } 
+            }
         }
     }
     
