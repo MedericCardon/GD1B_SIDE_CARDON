@@ -104,11 +104,12 @@ var game = new Phaser.Game(config);
         this.load.image('entree_grotte','assets/assets_grotte/Entree_grotte-assets/entree_grotte.png');
         this.load.image('fond_grotte','assets/assets_grotte/Entree_grotte-assets/fond_grotte_roche.png');
         this.load.image('block_central','assets/assets_grotte/Entree_grotte-assets/block_central_grotte.png');
+        this.load.image('block_central_02','assets/assets_grotte/Entree_grotte-assets/block_central_grotte_02.png');
         this.load.image('pilier_01','assets/assets_grotte/Entree_grotte-assets/pilier_grotte_01.png');
         this.load.image('pilier_02','assets/assets_grotte/Entree_grotte-assets/pilier_grotte_02.png');
         this.load.image('pilier_03','assets/assets_grotte/Entree_grotte-assets/pilier_grotte_03.png');
 
-        
+        this.load.image('block_passage','assets/assets_grotte/Entree_grotte-assets/block_grotte_passage_01.png');
 
     }
     
@@ -118,12 +119,14 @@ var game = new Phaser.Game(config);
 
     this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
     this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(1280,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(2560, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(1275,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(2542, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+    this.add.image(3817,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
     this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
     this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
     this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
-    this.add.image(3840,-80, 'station').setOrigin(0).setScrollFactor(0.4);
+    this.add.image(3840,54, 'station').setOrigin(0).setScrollFactor(0.4);
+    this.add.image(7000,600, 'plan_02').setScrollFactor(0.4);
 
 
     particles_bidon = this.add.particles('particules_bidon');
@@ -148,7 +151,7 @@ var game = new Phaser.Game(config);
         blendMode:'ADD',
     });
 
-    this.add.image( 5950,350, 'bidons').setOrigin(0).setScrollFactor(0.4);
+    //this.add.image( 5950,350, 'bidons').setOrigin(0).setScrollFactor(0.4);
     
     this.add.image( 6000,0, 'tuyaux').setOrigin(0).setScrollFactor(0.4);
 
@@ -159,10 +162,26 @@ var game = new Phaser.Game(config);
          delay: 2000
     });
 
-    this.add.image( 17200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 17200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+
+
+
+
+    
+    this.add.image( 21200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 21200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    
+    this.add.image( 20200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 20200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    
+    this.add.image( 19200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 19200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    
+    this.add.image( 18200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 18200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 17200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 17200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 17200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 16200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+    this.add.image( 16200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 16200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 16200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 15200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
@@ -182,7 +201,7 @@ var game = new Phaser.Game(config);
 
     particles = this.add.particles('particule_bulle');
     emitter = particles.createEmitter({
-        x:170,
+        x:80,
         y:10,
         speed: 50,
         scale: { start: 0.2, end: 0.5 },
@@ -193,7 +212,7 @@ var game = new Phaser.Game(config);
 
     particles2 = this.add.particles('particules2');
     emitter2 = particles2.createEmitter({
-        x:-170,
+        x:-80,
         y:10,
         speed: 50,
         scale: { start: 0.2, end: 0.5 },
@@ -207,7 +226,7 @@ var game = new Phaser.Game(config);
 
 
     // joueur //
-    player = this.physics.add.sprite(17000, 400, 'sous-marin');//depart 100, 200//
+    player = this.physics.add.sprite(16800, 600, 'sous-marin');//depart 100, 200//
     player.setDamping(false);
     player.setDrag(80);
     player.setMaxVelocity(280);
@@ -274,17 +293,19 @@ var game = new Phaser.Game(config);
     
     
 
-
+    
 
     grotte = this.physics.add.staticGroup();
     grotte.create(17285,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(30,500).setOffset(240,300);
     grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
-    grotte.create(16637,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
+    grotte.create(16627,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
     grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
     grotte.create(17911,970,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,315);
     grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);
     grotte.create(19192,1191,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(2560,100).setOffset(-550,275);
     grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1080,30).setOffset(820,382);
+    grotte.create(17780,370,'block_central_02').setOrigin(0).setScrollFactor(1).setSize(0,0).setOffset(820,382);;
+    grotte.create(19800,0,'block_passage').setOrigin(0).setScrollFactor(1);//.setSize(30,350).setOffset(700,215);
     
     
             
@@ -426,7 +447,7 @@ var game = new Phaser.Game(config);
     {
         
 
-        text.setText('Speed: ' + player.body.speed);
+        text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
         
         // Keyboard //
 
@@ -651,7 +672,7 @@ var game = new Phaser.Game(config);
                 player.setAccelerationX(300);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
-                player.setOffset(0,0);
+                player.setOffset(-95,0);
                 player.anims.play('bras_right', true);
             }
             else if(axisH >= 0.1){
@@ -668,7 +689,7 @@ var game = new Phaser.Game(config);
                 player.setAccelerationX(-300);
                 emitter.startFollow(player);
                 player.setSize(350, 178);
-                player.setOffset(0,0);
+                player.setOffset(-75,0);
                 player.anims.play('bras_left', true);
             }
 
@@ -678,16 +699,15 @@ var game = new Phaser.Game(config);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
-                player.setOffset(185,0);
+                player.setOffset(0,0);
                 
             }
 
             if(axisV >= 0.8 && axisH == 0){
-                player.setAccelerationY(200);
+                player.setAccelerationY(300);
                 player.setSize(180, 178);
-                player.setOffset(0,0);
                 if (player.anims.play('right')){
-                    player.setOffset(185,0);
+                    player.setOffset(0,0);
                 }
                 if (player.anims.play('left')){
                     player.setOffset(0,0);
@@ -703,11 +723,10 @@ var game = new Phaser.Game(config);
                 
             }
             if(axisV <= -0.8 && axisH ==0){
-                player.setAccelerationY(-200);
+                player.setAccelerationY(-300);
                 player.setSize(180, 178);
-                player.setOffset(185,0);
                 if (player.anims.play('right')){
-                    player.setOffset(185,0);
+                    player.setOffset(0,0);
                 }
                 if (player.anims.play('left')){
                     player.setOffset(0,0);
@@ -725,16 +744,16 @@ var game = new Phaser.Game(config);
 
             if (pad.X && axisH >= 0.1 && axisV <=-0.3){
                 player.setAccelerationX(300);
-                player.setAccelerationY(-150);
+                player.setAccelerationY(-300);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
-                player.setOffset(0,0);
+                player.setOffset(-95,0);
                 player.anims.play('bras_right', true);
             }
             else if (axisH >= 0.1 && axisV <=-0.3){
                 player.setAccelerationX(300);
-                player.setAccelerationY(-150);
+                player.setAccelerationY(-300);
                 player.anims.play('left', true);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -745,16 +764,16 @@ var game = new Phaser.Game(config);
 
             if (pad.X && axisH >= 0.1 && axisV >= 0.3){
                 player.setAccelerationX(300);
-                player.setAccelerationY(150);
+                player.setAccelerationY(300);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
-                player.setOffset(0,0);
+                player.setOffset(-95,0);
                 player.anims.play('bras_right', true);
             }
             else if (axisH >= 0.1 && axisV >= 0.3){
                 player.setAccelerationX(300);
-                player.setAccelerationY(150);
+                player.setAccelerationY(300);
                 player.anims.play('left', true);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -763,41 +782,41 @@ var game = new Phaser.Game(config);
             }
             if (pad.X && axisH <= -0.1 && axisV <=-0.3){
                 player.setAccelerationX(-300);
-                player.setAccelerationY(-150);
+                player.setAccelerationY(-300);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player)
                 player.setSize(350, 178);
-                player.setOffset(10,0);
+                player.setOffset(-75,0);
                 player.anims.play('bras_left', true);
             }
 
             else if (axisH <= -0.1 && axisV <=-0.3){
                 player.setAccelerationX(-300);
-                player.setAccelerationY(-150);
+                player.setAccelerationY(-300);
                 player.anims.play('right', true);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
-                player.setOffset(185,0);
+                player.setOffset(0,0);
             }
 
             if (pad.X && axisH <= -0.1 && axisV >= 0.3){
                 player.setAccelerationX(-300);
-                player.setAccelerationY(150);
+                player.setAccelerationY(300);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(350, 178);
-                player.setOffset(10,0);
+                player.setOffset(-75,0);
                 player.anims.play('bras_left', true);
             }
             else if (axisH <= -0.1 && axisV >= 0.3){
                 player.setAccelerationX(-300);
-                player.setAccelerationY(150);
+                player.setAccelerationY(300);
                 player.anims.play('right', true);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
-                player.setOffset(185,0);
+                player.setOffset(0,0);
             }
 
             if (axisV == 0 && axisH == 0 ){
