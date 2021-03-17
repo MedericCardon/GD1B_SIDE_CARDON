@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 90 },//105
-                debug: true
+                debug: false
             }
         },
         scene: {
@@ -296,14 +296,15 @@ var game = new Phaser.Game(config);
     
 
     grotte = this.physics.add.staticGroup();
-    grotte.create(17285,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(30,500).setOffset(240,300);
+    grotte.create(17310,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(90,500).setOffset(210,300);
     grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
     grotte.create(16627,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
+    grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1100,30).setOffset(840,400);
     grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
     grotte.create(17911,970,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,315);
     grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);
     grotte.create(19192,1191,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(2560,100).setOffset(-550,275);
-    grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1080,30).setOffset(820,382);
+    /*grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1100,30).setOffset(840,400);*/
     grotte.create(17780,370,'block_central_02').setOrigin(0).setScrollFactor(1).setSize(0,0).setOffset(820,382);;
     grotte.create(19800,0,'block_passage').setOrigin(0).setScrollFactor(1);//.setSize(30,350).setOffset(700,215);
     
