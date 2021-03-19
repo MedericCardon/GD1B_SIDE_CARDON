@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 90 },//105
-                debug: true
+                debug: false
             }
         },
         scene: {
@@ -58,6 +58,9 @@ var reparation3 = true;
 var playerPdv = 3;
 var invincible = false ;
 var compteur = 150;
+var power_up;
+var particles_power_up;
+var emitter_power_up;
 
 
 var KeyZ;
@@ -83,7 +86,7 @@ var game = new Phaser.Game(config);
         this.load.image('station', 'assets/background_station.png');
         this.load.spritesheet('sous-marin', 'assets/spriteSheet_sous_marin.png', { frameWidth: 183.5, frameHeight: 178 });
         this.load.spritesheet('sous-marin_Hit', 'assets/spriteSheet_sous_marin_hit.png', { frameWidth: 183.5, frameHeight: 178 });
-        this.load.spritesheet('sous-marin_bras', 'assets/spriteSheet.png', { frameWidth: 367.392857, frameHeight: 178 });
+        this.load.spritesheet('sous-marin_bras', 'assets/spriteSheet_bras.png', { frameWidth: 367.388889, frameHeight: 178 });
         this.load.spritesheet('algues','assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
         this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.75, frameHeight: 391});
         this.load.image('particule_bulle','assets/particule_bulle.png');
@@ -97,6 +100,7 @@ var game = new Phaser.Game(config);
         this.load.image('bidons','assets/bidons.png');
 
         this.load.image('particules_bidon', 'assets/particules_bidon.png');
+        this.load.image('power_up','assets/assets_grotte/Entree_grotte-assets/power_up.png');
 
         this.load.image('haut_grotte','assets/assets_grotte/Entree_grotte-assets/haut_grotte.png');
         this.load.image('haut_grotte_flip','assets/assets_grotte/Entree_grotte-assets/haut_grotte_flip.png');
@@ -152,6 +156,9 @@ var game = new Phaser.Game(config);
         lifespan: 40000,
         blendMode:'ADD',
     });
+
+    
+    
 
     //this.add.image( 5950,350, 'bidons').setOrigin(0).setScrollFactor(0.4);
     
@@ -225,12 +232,29 @@ var game = new Phaser.Game(config);
 
 
    
+    particles_power_up = this.add.particles('particule_bulle');
+    emitter_power_up = particles_power_up.createEmitter({
+        angle: { start: 0, end: 360, steps: 32 },
+        lifespan: 600,
+        speed: 400,
+        quantity: 32,
+        scale: { start: 1.5, end: 0 },
+        blendMode: 'ADD',
+        on: false
+    });
+   
+
+    /*emitter_power_up.setPosition(16970,480);
+    emitter_power_up.setSpeed(50);
+    emitter.setScale(0.2,0.5);
+    emitter_power_up.setBlendMode(Phaser.BlendModes.ADD);*/
+
     
     
 
 
     // joueur //
-    player = this.physics.add.sprite(20800,900, 'sous-marin');//depart 100, 200//
+    player = this.physics.add.sprite(16000,500, 'sous-marin');//depart 100, 200//
     player.setDamping(false);
     player.setDrag(80);
     player.setMaxVelocity(280);
@@ -263,6 +287,19 @@ var game = new Phaser.Game(config);
     this.add.image(15100,50,'entree_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image(16355,60,'pilier_01').setOrigin(0).setScrollFactor(1);
     
+    power_up = this.physics.add.sprite(16970,480, 'power_up');
+    power_up.body.setAllowGravity(false); // desactivation de la gravité //
+    power_up.setCollideWorldBounds(true);
+
+    this.tweens.add({
+        targets : power_up,
+        y:300,
+        duration: 1500,
+        yoyo: true,
+        delay: 100,
+        repeat: -1
+    });
+
     
     ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
     ennemi_bouteille.setSize(70,50);
@@ -378,7 +415,7 @@ var game = new Phaser.Game(config);
     keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);//ajouter clic souris//
                     
-
+   
 
     this.input.gamepad.on('down', function (pad, button, index) {
         return;
@@ -438,14 +475,14 @@ var game = new Phaser.Game(config);
 
         this.anims.create({
             key: 'bras_right',
-            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 10, end: 18 }),
+            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 0, end: 8 }),
             frameRate: 25,
             repeat: 0
         });
 
         this.anims.create({
             key: 'bras_left',
-            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 19, end: 27 }),
+            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 9, end: 17 }),
             frameRate: 25,
             repeat: 0
         });
@@ -471,6 +508,8 @@ var game = new Phaser.Game(config);
 
     this.physics.add.collider(player, ennemi_bouteille, hitGrotte, null, this);
 
+    this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
+
 
     //this.physics.add.collider(player, ennemi_bouteille,onHit, perd_vie, null, this);
 
@@ -484,7 +523,7 @@ var game = new Phaser.Game(config);
     function update ()
     {
         
-
+        
         text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
         
         // Keyboard //
@@ -955,6 +994,14 @@ var game = new Phaser.Game(config);
     }
     
     
+    function hitPowerUp (player, power_up){
+        if(pad.X){
+            power_up.destroy(true,true);
+            particles_power_up.emitParticleAt(power_up.x, power_up.y)
+            }
+    }
+
+
     function kill (player, ennemi_bouteille) 
         {
             if (pad.X){
@@ -985,17 +1032,10 @@ var game = new Phaser.Game(config);
                 reparation1.destroy(true,true);
                 // animation d'invulnérabilité //
             }
-
-    function hitRecif(player,recif,grotte){
-        if (player.body.speed >= 280){
-           playerPdv -- ;
         }
 
     }
-    
-        
-    }
-}
+
 </script>
 
 </body>
