@@ -34,7 +34,7 @@ var config = {
             update: update
         }
     };
-
+// ----- variables ----- //
 var player;
 var cursors;
 var recif;
@@ -67,8 +67,10 @@ var rocher_02;
 var rocher_03;
 var rocher_04;
 var rocher_05;
+var gameOver = false;
+var gameOverText;
 
-
+// ----- variables touche clavier ----- //
 
 var KeyZ;
 var KeyQ;
@@ -80,34 +82,53 @@ var game = new Phaser.Game(config);
     function preload ()
     {
         this.load.image('background', 'assets/background.png');
+
+        // ----- filtre ----- //
+
         this.load.image('light', 'assets/lumiere_principale.png');
         this.load.image('light_grotte', 'assets/filtre_caverne.png');
+
+        // ----- assets première zone ----- //
+
         this.load.image('plan_01', 'assets/Recif_03.png');
         this.load.image('recif_block', 'assets/Recif_block.png');
         this.load.image('petit_recif','assets/assets_grotte/Entree_grotte-assets/petit_recif.png')
-        //this.load.image('plan_01_Flip', 'assets/Algue_01_Flip.png');
         this.load.image('plan_02', 'assets/Recif_02.png');
         this.load.image('plan_02_Flip', 'assets/Recif_02_Flip.png');
         this.load.image('plan_03', 'assets/Recif_01.png');
         this.load.image('plan_03_Flip', 'assets/Recif_01_Flip.png');
         this.load.image('station', 'assets/background_station.png');
+        this.load.image('tuyaux','assets/Tuyaux.png');
+        this.load.image('bidons','assets/bidons.png');
+
+        // ----- spriteSheet sous marin + algues ----- //
+
         this.load.spritesheet('sous-marin', 'assets/spriteSheet_sous_marin.png', { frameWidth: 183.5, frameHeight: 178 });
         this.load.spritesheet('sous-marin_Hit', 'assets/spriteSheet_sous_marin_hit.png', { frameWidth: 183.5, frameHeight: 178 });
         this.load.spritesheet('sous-marin_bras', 'assets/spriteSheet_bras.png', { frameWidth: 367.388889, frameHeight: 178 });
         this.load.spritesheet('algues','assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
+
+        // ----- spriteSheet ennemies ----- //
+
         this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.75, frameHeight: 391});
-        this.load.image('particule_bulle','assets/particule_bulle.png');
-        this.load.image('particules2', 'assets/particule_bulle.png');
         this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 101, frameHeight: 53});
+
+        // ----- HUD + vie ----- // 
 
         this.load.image('reparation','assets/Cle.png');
         this.load.image('HUD','assets/HUD_sous_marin.png');
 
-        this.load.image('tuyaux','assets/Tuyaux.png');
-        this.load.image('bidons','assets/bidons.png');
+        // ----- assests particules ----- //
 
+        this.load.image('particule_bulle','assets/particule_bulle.png');
+        this.load.image('particules2', 'assets/particule_bulle.png');
         this.load.image('particules_bidon', 'assets/particules_bidon.png');
+
+        // ----- power_up ----- //
+
         this.load.image('power_up','assets/assets_grotte/Entree_grotte-assets/power_up.png');
+
+        // ----- assets grotte ----- //
 
         this.load.image('haut_grotte','assets/assets_grotte/Entree_grotte-assets/haut_grotte.png');
         this.load.image('haut_grotte_flip','assets/assets_grotte/Entree_grotte-assets/haut_grotte_flip.png');
@@ -124,388 +145,366 @@ var game = new Phaser.Game(config);
         this.load.image('block_passage','assets/assets_grotte/Entree_grotte-assets/block_grotte_passage_01.png');
         this.load.image('rocher_01','assets/assets_grotte/Entree_grotte-assets/rocher_01.png');
         this.load.image('rocher_02','assets/assets_grotte/Entree_grotte-assets/rocher_02.png');
-
     }
     
-
     function create ()
     {
 
-    this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
-    this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(1275,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(2542, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(3817,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
-    this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
-    this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
-    this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
-    this.add.image(3840,54, 'station').setOrigin(0).setScrollFactor(0.4);
-    this.add.image(7000,600, 'plan_02').setScrollFactor(0.4);
+        // ----- assets première zone ----- //
 
+        this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
+        this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(1275,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(2542, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(3817,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(3840,54, 'station').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(7000,600, 'plan_02').setScrollFactor(0.4);
 
-    particles_bidon = this.add.particles('particules_bidon');
-    var emitter_bidon = particles_bidon.createEmitter({
-        x: 2100,
-        y: 720,
-        speed: 100,
-        frequency: 150,
-        lifespan: 40000,
-        blendMode:'ADD',
-    });
+        // ----- particules "poussière" dans l'eau ----- //
 
-    particles_bidon2 = this.add.particles('particules_bidon');
-    var emitter_bidon2 = particles_bidon2.createEmitter({
-        x: 3500,
-        y: 720,
-        speed: 100,
-        frequency: 100,
-        speed: 100,
-        frequency: 150,
-        lifespan: 40000,
-        blendMode:'ADD',
-    });
-
-    
-    
-
-    
-    this.add.image( 6000,0, 'tuyaux').setOrigin(0).setScrollFactor(0.4);
-
-    
-    this.add.image( 22200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 22200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 21200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 21200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 20200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 20200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 19200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 19200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 18200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 18200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 17200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 17200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 17200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 16200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 16200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 16200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 15200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 15200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image( 15200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    // Ajout particules //
-
-    particles = this.add.particles('particule_bulle');
-    emitter = particles.createEmitter({
-        x:80,
-        y:10,
-        speed: 50,
-        scale: { start: 0.2, end: 0.5 },
-        blendMode: 'ADD',
-        
-    });
-
-
-    particles2 = this.add.particles('particules2');
-    emitter2 = particles2.createEmitter({
-        x:-80,
-        y:10,
-        speed: 50,
-        scale: { start: 0.2, end: 0.5 },
-        blendMode: 'ADD',
-    });
-
-
-   
-    particles_power_up = this.add.particles('particules_bidon');
-    emitter_power_up = particles_power_up.createEmitter({
-        angle: { start: 0, end: 360, steps: 32 },
-        lifespan: 600,
-        speed: 400,
-        quantity: 32,
-        scale: { start: 8, end: 0 },
-        blendMode: 'ADD',
-        on: false
-    });
-   
-
-
-    
-    
-
-
-    // joueur //
-    player = this.physics.add.sprite(16400,900, 'sous-marin');//depart 100, 200//
-    player.setDamping(false);
-    player.setDrag(80);
-    player.setMaxVelocity(280);
-    player.setSize(180, 178);
-    player.setOffset(0,0);
-    player.setCollideWorldBounds(true);
-
-
-    waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster');
-    waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
-    waste_monster.setCollideWorldBounds(true);
-    
-
-
-    recif = this.physics.add.staticGroup();
-    
-    recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
-    recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
-    recif.create(10230,560, 'plan_01').setOrigin(0).setScrollFactor(1).setSize(7700,300).setOffset(0,210); 
-
-
-    algues = this.add.sprite(1280,610, 'algues');
-    algues_2 = this.add.sprite(3790,610, 'algues');
-    algues_3 = this.add.sprite(6350,610, 'algues');
-    algues_4 = this.add.sprite(8910, 610, 'algues');
-    algues_5 = this.add.sprite(11470, 610, 'algues');
-    algues_6 = this.add.sprite(12730,610, 'algues');
-    algues_7 = this.add.sprite(13880,610, 'algues');
-
-    this.add.image(15100,50,'entree_grotte').setOrigin(0).setScrollFactor(1);
-    this.add.image(16355,60,'pilier_01').setOrigin(0).setScrollFactor(1);
-    
-    power_up = this.physics.add.sprite(16970,480, 'power_up');
-    power_up.body.setAllowGravity(false); // desactivation de la gravité //
-    power_up.setCollideWorldBounds(true);
-
-    this.tweens.add({
-        targets : power_up,
-        y:300,
-        duration: 1500,
-        yoyo: true,
-        delay: 100,
-        repeat: -1
-    });
-
-    rocher_01 = this.physics.add.sprite(16970,600, 'rocher_01');
-    
-    this.tweens.add({
-        targets : rocher_01,
-        y: 1700,
-        duration: 1000,
-        completeDelay: 100,
-        repeat: -1
-    });
-
-    rocher_02 = this.physics.add.sprite(16760,630, 'rocher_02');
-    
-    this.tweens.add({
-        targets : rocher_02,
-        y: 1700,
-        duration: 1000,
-        completeDelay: 100,
-        repeat: -1
-    });
-
-    rocher_03 = this.physics.add.sprite(16600,610, 'rocher_01');
-    
-    this.tweens.add({
-        targets : rocher_03,
-        y: 1700,
-        duration: 1500,
-        completeDelay: 100,
-        repeat: -1
-    });
-
-    rocher_04 = this.physics.add.sprite(17200,650, 'rocher_02');
-    
-    this.tweens.add({
-        targets : rocher_04,
-        y: 1700,
-        duration: 1500,
-        completeDelay: 100,
-        repeat: -1
-    });
-
-   /* rocher_05 = this.physics.add.sprite(17400,650, 'rocher_02');
-    
-    this.tweens.add({
-        targets : rocher_05,
-        y: 1700,
-        duration: 1200,
-        completeDelay: 100,
-        repeat: -1
-    });*/
-
-    
-    ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
-    ennemi_bouteille.setSize(70,50);
-    ennemi_bouteille.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
-    ennemi_bouteille.setCollideWorldBounds(true);
-    
-    this.tweens.add({
-        targets: ennemi_bouteille,
-        //x: 2500,
-        y: 400,
-        duration: 2000,
-        yoyo: true,
-        delay: 100,
-        repeat: -1
-    });
-
-
-    // block de collison pour fermer la map // 
-
-    recif_block = this.physics.add.staticGroup();
-
-    recif_block.create(1280,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(2560,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(3840,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(5120,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(6400,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(7680,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(10240,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-    recif_block.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
-
-    // block de collision pour la gotte // 
-
-    recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(2000,600).setOffset(0,-5);
-    recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(160,215).setOffset(1962,-825)
-    recif_block.create(17920,1800, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(200,130).setOffset(860,-855)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,530).setOffset(290,-1700)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(360,-1470)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(460,-1180)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(1680,20).setOffset(460,-680)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,800).setOffset(2120,-1460)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(2200,-1460)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(3000,20).setOffset(2200,-1410)
-    recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,1030).setOffset(4480,-1410)
-
-    // block de collison pour fermer la map //
-
-    recif_block.create(20480,2100, 'recif_block').setOrigin(1).setScrollFactor(1)
-    recif_block.create(21760,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
-    recif_block.create(23040,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
-    recif_block.create(24320,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
-    recif_block.create(24320,1500, 'recif_block').setOrigin(1).setScrollFactor(1)
-    recif_block.create(24320,900, 'recif_block').setOrigin(1).setScrollFactor(1)
-    recif_block.create(24320,600, 'recif_block').setOrigin(1).setScrollFactor(1)
-
-    // assets grotte et collisions //
-
-    grotte = this.physics.add.staticGroup();
-    
-    grotte.create(17310,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(90,500).setOffset(210,300);
-    grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
-    grotte.create(17780,370,'block_central_02').setOrigin(0).setScrollFactor(1).setSize(10,530).setOffset(780,730);
-    grotte.create(16627,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(3000,8).setOffset(1450,698);  
-    grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1100,30).setOffset(786,370);
-    grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,220);
-    grotte.create(17911,970,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(60,600).setOffset(700,75); 
-    grotte.create(19180,975,'bas_grotte_boss').setOrigin(0).setScrollFactor(1).setSize(6000,100).setOffset(770,600);
-    grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);   
-    grotte.create(19780,0,'block_passage').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
-    
-    // Filtres de lumières avec rayon ('light') hors de la grotte // 
-    
-    this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(2560,0, 'light').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(5120,0, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(5120,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(3840,0, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(0,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(1280,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(2560,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    this.add.image(3840,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-    
-
-
-    this.add.image(10,10, 'HUD').setOrigin(0).setScrollFactor(0);
-
-    // Point de vie du joueur sous forme de cle de reparation //
-
-    reparation1 = this.physics.add.staticGroup();
-    reparation2 = this.physics.add.staticGroup();
-    reparation3 = this.physics.add.staticGroup();
-
-    
-    reparation1.create(125,60, 'reparation').setScrollFactor(0); 
-    reparation2.create(155,60, 'reparation').setScrollFactor(0);
-    reparation3.create(185,60, 'reparation').setScrollFactor(0);
-
-
-    //  Ajout de la caméra //
-
-    this.cameras.main.setBounds(0, 0, 1280 * 20, 1440);
-    this.physics.world.setBounds(0, 0, 1280 * 20, 1440);
-    this.cameras.main.startFollow(player, true, 0.05, 0.05);
-
-    // controles ( pad & clavier)
-
-    cursors = this.input.keyboard.createCursorKeys();
-    keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-    keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
-    keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    //ajouter clic souris//
-                    
-   
-
-    this.input.gamepad.on('down', function (pad, button, index) {
-        return;
-    });
-
-    
-    // animations //
-
-    this.anims.create({
-        key: 'hit_left',
-        frames: this.anims.generateFrameNumbers('sous-marin_Hit', {start:0, end : 9}),
-        frameRate : 15,
-        repeat: 2
-    });
-
-    this.anims.create({
-        key: 'hit_right',
-        frames: this.anims.generateFrameNumbers('sous-marin_Hit', {start:10, end : 19}),
-        frameRate : 15,
-        repeat: 2
-    });
-
-    this.anims.create({
-        key: 'waste_monster',
-        frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 3}),
-        frameRate : 7,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key : 'ennemi_bouteille_01',
-        frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 3}),
-        frameRate : 5,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key : 'algues_1',
-        frames: this.anims.generateFrameNumbers('algues', {start:0, end : 3}),
-        frameRate : 0.8,
-        repeat: -1
-    });
-    
-    this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('sous-marin', { start: 0, end: 4}),
-            frameRate: 25,
-            repeat: 1
+        particles_bidon = this.add.particles('particules_bidon');
+        var emitter_bidon = particles_bidon.createEmitter({
+            x: 2100,
+            y: 720,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
         });
+
+        particles_bidon2 = this.add.particles('particules_bidon');
+        var emitter_bidon2 = particles_bidon2.createEmitter({
+            x: 3500,
+            y: 720,
+            speed: 100,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        // ----- asset tuyaux + bidons (arriere plan) ----- //
+
+        this.add.image( 6000,0, 'tuyaux').setOrigin(0).setScrollFactor(0.4);
+
+        // ----- Arriere plan grotte ----- //
+        
+        this.add.image( 22200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 22200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 21200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 21200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 20200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 20200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 19200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 19200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 18200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 18200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 17200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 17200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 17200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 16200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 16200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 16200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 15200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 15200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 15200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        
+        // ----- Particules bulle (sous marin) + particules mort + particules power_up ----- //
+
+        particles = this.add.particles('particule_bulle');
+        emitter = particles.createEmitter({
+            x:80,
+            y:10,
+            speed: 50,
+            scale: { start: 0.2, end: 0.5 },
+            blendMode: 'ADD',
+            
+        });
+
+
+        particles2 = this.add.particles('particules2');
+        emitter2 = particles2.createEmitter({
+            x:-80,
+            y:10,
+            speed: 50,
+            scale: { start: 0.2, end: 0.5 },
+            blendMode: 'ADD',
+        });
+
+
+    
+        particles_power_up = this.add.particles('particules_bidon');
+        emitter_power_up = particles_power_up.createEmitter({
+            angle: { start: 0, end: 360, steps: 32 },
+            lifespan: 600,
+            speed: 400,
+            quantity: 32,
+            scale: { start: 8, end: 0 },
+            blendMode: 'ADD',
+            on: false
+        });
+    
+        // ----- Player ----- //
+
+        player = this.physics.add.sprite(4000,300, 'sous-marin');//depart 100, 200//
+        player.setDamping(false);
+        player.setDrag(80);
+        player.setMaxVelocity(280);
+        player.setSize(180, 178);
+        player.setOffset(0,0);
+        player.setCollideWorldBounds(true);
+
+        // ----- Waste monster (boss) ----- //
+
+        waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster');
+        waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
+        waste_monster.setCollideWorldBounds(true);
+        
+        // ----- Recifs premier plan première zone ----- //
+
+        recif = this.physics.add.staticGroup();
+        
+        recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+        recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+        recif.create(10230,560, 'plan_01').setOrigin(0).setScrollFactor(1).setSize(7700,300).setOffset(0,210); 
+
+        // ----- Algues en mouvement première zone ----- //
+
+        algues = this.add.sprite(1280,610, 'algues');
+        algues_2 = this.add.sprite(3790,610, 'algues');
+        algues_3 = this.add.sprite(6350,610, 'algues');
+        algues_4 = this.add.sprite(8910, 610, 'algues');
+        algues_5 = this.add.sprite(11470, 610, 'algues');
+        algues_6 = this.add.sprite(12730,610, 'algues');
+        algues_7 = this.add.sprite(13880,610, 'algues');
+
+        // ----- Entree grotte et pilier_01 (Le sous marin passe à travers) ----- //
+
+        this.add.image(15100,50,'entree_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image(16355,60,'pilier_01').setOrigin(0).setScrollFactor(1);
+
+        // ----- Power_up ----- //    
+
+        power_up = this.physics.add.sprite(16970,480, 'power_up');
+        power_up.body.setAllowGravity(false); // gravité false //
+        power_up.setCollideWorldBounds(true);
+
+        this.tweens.add({
+            targets : power_up,
+            y:300,
+            duration: 1500,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        // ----- Rocher grotte ----- //
+
+        rocher_01 = this.physics.add.sprite(16970,600, 'rocher_01');
+        
+        this.tweens.add({
+            targets : rocher_01,
+            y: 1700,
+            duration: 1000,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        rocher_02 = this.physics.add.sprite(16760,630, 'rocher_02');
+        
+        this.tweens.add({
+            targets : rocher_02,
+            y: 1700,
+            duration: 1000,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        rocher_03 = this.physics.add.sprite(16600,610, 'rocher_01');
+        
+        this.tweens.add({
+            targets : rocher_03,
+            y: 1700,
+            duration: 1500,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        rocher_04 = this.physics.add.sprite(17200,650, 'rocher_02');
+        
+        this.tweens.add({
+            targets : rocher_04,
+            y: 1700,
+            duration: 1500,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        // ----- Ennemi "bouteille" ----- //
+        
+        ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
+        ennemi_bouteille.setSize(70,50);
+        ennemi_bouteille.body.setAllowGravity(false); // gravité false pour les ennemis //
+        ennemi_bouteille.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille,
+            y: 400,
+            duration: 2000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        // ----- block de collison pour fermer la map ----- // 
+
+        recif_block = this.physics.add.staticGroup();
+
+        recif_block.create(1280,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(2560,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(3840,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(5120,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(6400,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(7680,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(10240,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+
+        // ----- block de collision pour la gotte ----- // 
+
+        recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(2000,600).setOffset(0,-5);
+        recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(160,215).setOffset(1962,-825)
+        recif_block.create(17920,1800, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(200,130).setOffset(860,-855)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,530).setOffset(290,-1700)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(360,-1470)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(460,-1180)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(1680,20).setOffset(460,-680)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,800).setOffset(2120,-1460)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(2200,-1460)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(3000,20).setOffset(2200,-1410)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,1030).setOffset(4480,-1410)
+
+        // ----- block de collison pour fermer la map ----- //
+
+        recif_block.create(20480,2100, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(21760,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(23040,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,1500, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,900, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,600, 'recif_block').setOrigin(1).setScrollFactor(1)
+
+        // ----- assets grotte et collisions ----- //
+
+        grotte = this.physics.add.staticGroup();
+        
+        grotte.create(17310,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(90,500).setOffset(210,300);
+        grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
+        grotte.create(17780,370,'block_central_02').setOrigin(0).setScrollFactor(1).setSize(10,530).setOffset(780,730);
+        grotte.create(16627,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(3000,8).setOffset(1450,698);  
+        grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1100,30).setOffset(786,370);
+        grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,220);
+        grotte.create(17911,970,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(60,600).setOffset(700,75); 
+        grotte.create(19180,975,'bas_grotte_boss').setOrigin(0).setScrollFactor(1).setSize(6000,100).setOffset(770,600);
+        grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);   
+        grotte.create(19780,0,'block_passage').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
+        
+        // ----- Filtres de lumières avec rayon ('light') hors de la grotte ----- // 
+        
+        this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(2560,0, 'light').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(5120,0, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(5120,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(3840,0, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(0,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(1280,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(2560,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(3840,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        
+        // ----- HUD ----- //
+
+        this.add.image(10,10, 'HUD').setOrigin(0).setScrollFactor(0);
+
+        // ----- Point de vie du joueur sous forme de cle de reparation ----- //
+
+        reparation1 = this.physics.add.staticGroup();
+        reparation2 = this.physics.add.staticGroup();
+        reparation3 = this.physics.add.staticGroup();
+
+        reparation1.create(125,60, 'reparation').setScrollFactor(0); 
+        reparation2.create(155,60, 'reparation').setScrollFactor(0);
+        reparation3.create(185,60, 'reparation').setScrollFactor(0);
+
+
+        //  ----- Caméra ----- //
+
+        this.cameras.main.setBounds(0, 0, 1280 * 20, 1440);
+        this.physics.world.setBounds(0, 0, 1280 * 20, 1440);
+        this.cameras.main.startFollow(player, true, 0.05, 0.05);
+
+        // ----- Controles ( pad & clavier) ----- //
+
+        cursors = this.input.keyboard.createCursorKeys();
+        keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+                        
+        this.input.gamepad.on('down', function (pad, button, index) {
+            return;
+        });
+
+        
+        // ----- animations ----- //
+
+        this.anims.create({
+            key: 'hit_left',
+            frames: this.anims.generateFrameNumbers('sous-marin_Hit', {start:0, end : 9}),
+            frameRate : 15,
+            repeat: 2
+        });
+
+        this.anims.create({
+            key: 'hit_right',
+            frames: this.anims.generateFrameNumbers('sous-marin_Hit', {start:10, end : 19}),
+            frameRate : 15,
+            repeat: 2
+        });
+
+        this.anims.create({
+            key: 'waste_monster',
+            frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 3}),
+            frameRate : 7,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key : 'ennemi_bouteille_01',
+            frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 3}),
+            frameRate : 5,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key : 'algues_1',
+            frames: this.anims.generateFrameNumbers('algues', {start:0, end : 3}),
+            frameRate : 0.8,
+            repeat: -1
+        });
+        
+        this.anims.create({
+                key: 'left',
+                frames: this.anims.generateFrameNumbers('sous-marin', { start: 0, end: 4}),
+                frameRate: 25,
+                repeat: 1
+            });
 
         this.anims.create({
             key: 'right',
@@ -528,48 +527,44 @@ var game = new Phaser.Game(config);
             repeat: 0
         });
 
-    
+        // ----- Texte ----- //
+            
+        text = this.add.text(10, 120, '', { font: '16px Courier', fill: '#00ff00' });
+        text.setScrollFactor(0);
+
+        gameOverText = this.add.text(500, 300, '', { fontSize: '50px', fill: '#fff', align: 'center' });
+        gameOverText.setScrollFactor(0);
+
+        // ----- Overlap ----- //
         
+        this.physics.add.overlap(player, rocher_01,hitRocher,null,this);
+        this.physics.add.overlap(player, rocher_02,hitRocher,null,this);
+        this.physics.add.overlap(player, rocher_03,hitRocher,null,this);
+        this.physics.add.overlap(player, rocher_04,hitRocher,null,this);
+        this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
+        this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
+        this.physics.add.overlap(player, ennemi_bouteille, hitEnnemi, null, this);
 
-    text = this.add.text(10, 120, '', { font: '16px Courier', fill: '#00ff00' });
-    text.setScrollFactor(0);
+        // ----- Collider ----- //
 
+        
+        this.physics.add.collider(player,grotte,hitGrotte,null,this);
+        this.physics.add.collider(player,recif_block,hitGrotte,null,this);
+        this.physics.add.collider(player, recif,hitGrotte,null,this);
 
-    // collider & overlap //
-    this.physics.add.collider(player, recif);
-
-    //this.physics.add.collider(player, grotte);
-    this.physics.add.overlap(player, rocher_01,hitRocher,null,this);
-    this.physics.add.overlap(player, rocher_02,hitRocher,null,this);
-    this.physics.add.overlap(player, rocher_03,hitRocher,null,this);
-    this.physics.add.overlap(player, rocher_04,hitRocher,null,this);
-    //this.physics.add.overlap(player, rocher_05,hitRocher,null,this);
-
-
-    this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
-
-
-    this.physics.add.collider(player, ennemi_bouteille, hitGrotte, null, this);
-
-    this.physics.add.overlap(player, power_up, hitPowerUp,powerUp,null,this);
-
-
-    //this.physics.add.collider(player, ennemi_bouteille,onHit, perd_vie, null, this);
-
-    this.physics.add.collider(player,grotte,hitGrotte,null,this);
-    this.physics.add.collider(player,recif_block,hitGrotte,null,this);
-
-    //this.physics.add.collider(player, grotte, hitGrotte, null, this);
-
-    
     }
 
     function update ()
     {
-        
-        
-        text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
-        
+
+        if (gameOver){
+            return;
+        }
+        if(player.x >= 6000){
+            //text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
+            text.setText('Fin de transmision...');
+            
+        }
         // Keyboard //
 
         if (keyQ.isDown)
@@ -627,13 +622,10 @@ var game = new Phaser.Game(config);
 
         pad = this.input.gamepad.getPad(0);
         
-        
         if (pad.axes.length)
         {
-            var axisH = pad.axes[0].getValue();
-            var axisV = pad.axes[1].getValue();
-            //player.x += 2 * axisH;// modifier 2//
-            //player.y += 1 * axisV;// modifier 1//
+            var axisH = pad.axes[0].getValue(); // stick manette sur x //
+            var axisV = pad.axes[1].getValue(); // stick manette sur y //
             player.flipX = (axisH >= -1);
 
 
@@ -744,7 +736,8 @@ var game = new Phaser.Game(config);
 
 
             // ----- Direction bas ----- //
-            if(pad.A && axisV >= 0.8 && axisH == 0){ // Direction bas //
+
+            if(pad.A && axisV >= 0.8 && axisH == 0){ // Direction bas + acceleration //
                 player.setAccelerationY(500);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
@@ -794,7 +787,7 @@ var game = new Phaser.Game(config);
 
             // ----- Direction haut ----- //
 
-            if(pad.A && axisV <= -0.8 && axisH ==0){ // Direction bas //
+            if(pad.A && axisV <= -0.8 && axisH ==0){ // Direction haut + acceleration //
                 player.setAccelerationY(-500);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
@@ -882,7 +875,6 @@ var game = new Phaser.Game(config);
                 player.setOffset(-95,0);
                 player.anims.play('bras_right', true);
             }
-            
             else if (axisH >= 0.1 && axisV <=-0.3){ //Direction haut droite //
                 player.setAccelerationX(300);
                 player.setAccelerationY(-300);
@@ -935,7 +927,6 @@ var game = new Phaser.Game(config);
                 player.setOffset(-95,0);
                 player.anims.play('bras_right', true);
             }
-            
             else if (axisH >= 0.1 && axisV >= 0.3){// Direction bas droite //
                 player.setAccelerationX(300);
                 player.setAccelerationY(300);
@@ -987,8 +978,6 @@ var game = new Phaser.Game(config);
                 player.setOffset(-75,0);
                 player.anims.play('bras_left', true);
             }
-            
-
             else if (axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche //
                 player.setAccelerationX(-300);
                 player.setAccelerationY(-300);
@@ -1051,7 +1040,6 @@ var game = new Phaser.Game(config);
                 player.setOffset(0,0);
             }
             
-
             if (axisV == 0 && axisH == 0 ){ // Aucune  direction donnée //
                 player.setAcceleration(0);
                 player.setMaxVelocity(280);
@@ -1059,6 +1047,7 @@ var game = new Phaser.Game(config);
                 emitter2.stopFollow(player); 
             }
         }
+
         if(invincible == true){ // relance du compteur d'invulné //
             compteur-- ;
             if(compteur == 0){
@@ -1068,13 +1057,54 @@ var game = new Phaser.Game(config);
         }
     }
     
+    // ----- Fonctions ----- //
+
+    function hitEnnemi(player, grotte){ // en cas de vitesse trop élevée et de collision avec la grotte, le joueur perd une vie //
+    
+    if(invincible == false){
+        invincible = true ;
+   
+        playerPdv -= 1;
+        this.cameras.main.shake(200);
+        if (playerPdv == 2){
+            reparation3.destroy(true,true);
+        }
+        if (playerPdv == 1){
+            reparation2.destroy(true,true); 
+        }
+        if (playerPdv == 0){
+            reparation1.destroy(true,true);
+            this.physics.pause();
+            player.destroy(true,true);
+            particles_power_up.emitParticleAt(player.x, player.y)
+            this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+            gameOverText.setText('Game over');
+            gameOver = true;
+            emitter.stopFollow(player);
+            emitter2.stopFollow(player);
+        }
+        
+    }
+
+}
+
     function hitRocher(player, playerPdv){ // mort si collision avec rocher //
        
-            playerPdv -= 3;
+            playerPdv = 0;
             this.cameras.main.shake(200);
             reparation1.destroy(true,true);
             reparation2.destroy(true,true);
             reparation3.destroy(true,true);
+            if(playerPdv == 0 ){
+                this.physics.pause();
+                player.destroy(true,true);
+                particles_power_up.emitParticleAt(player.x, player.y)
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+                gameOverText.setText('Game over');
+                gameOver = true;
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player);
+            }
     }
     
     
@@ -1082,16 +1112,11 @@ var game = new Phaser.Game(config);
         if(pad.X){
             power_up.destroy(true,true);
             particles_power_up.emitParticleAt(power_up.x, power_up.y)
+            ajout_power_up = true;
             }
     }
 
-    function powerUp (player){
-
-        ajout_power_up = true;
-    }
-
-    function kill (player, ennemi_bouteille) 
-        {
+    function kill (player, ennemi_bouteille){
             if (pad.X){
                 ennemi_bouteille.destroy(true, true);
             }
@@ -1100,12 +1125,11 @@ var game = new Phaser.Game(config);
             
     function hitGrotte(player, grotte){ // en cas de vitesse trop élevée et de collision avec la grotte, le joueur perd une vie //
     
-        if(invincible == false && player.body.speed >= 400){
+        if(invincible == false && player.body.speed >= 500){
             invincible = true ;
        
             playerPdv -= 1;
             this.cameras.main.shake(200);
-            //player.anims.play('hit_right')
             if (playerPdv == 2){
                 reparation3.destroy(true,true);
             }
@@ -1114,9 +1138,16 @@ var game = new Phaser.Game(config);
             }
             if (playerPdv == 0){
                 reparation1.destroy(true,true);
-            }
+                this.physics.pause();
+                player.destroy(true,true);
+                particles_power_up.emitParticleAt(player.x, player.y)
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+                gameOverText.setText('Game over');
+                gameOver = true;
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player);
+            }  
         }
-
     }
 
 </script>
