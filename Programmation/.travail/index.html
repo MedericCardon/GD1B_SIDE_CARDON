@@ -651,7 +651,7 @@ var game = new Phaser.Game(config);
                 player.setOffset(0,0); 
             }
 
-            else if (ajout_power_up == true && pad.A && axisH >= 0.1){ // direction droite + power_up //
+            else if (ajout_power_up == true && pad.B && axisH >= 0.1){ // direction droite + power_up //
                 player.anims.play('left', true);
                 player.setMaxVelocity(1500);
                 player.setVelocityX(1500);
@@ -660,6 +660,15 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
+            else if (pad.A && axisH >= 0.1){
+                player.setAccelerationX(500);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true); 
+            }
+            
             else if (pad.X && axisH >= 0.1){ // direction droite + bras //
                 player.setAccelerationX(300);
                 emitter2.startFollow(player);
@@ -677,7 +686,6 @@ var game = new Phaser.Game(config);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
-                console.log(ajout_power_up);
 
                 algues.anims.play('algues_1',true);
                 algues_2.anims.play('algues_1',true);
@@ -699,7 +707,7 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
-            else if (ajout_power_up == true && pad.A && axisH <= -0.1){ //Direction gauche + power_up //
+            else if (ajout_power_up == true && pad.B && axisH <= -0.1){ //Direction gauche + power_up //
                 player.anims.play('right', true);
                 player.setMaxVelocity(1500);
                 player.setVelocityX(-1500);
@@ -708,7 +716,14 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
-
+            else if (pad.A && axisH <= -0.1){
+                player.setAccelerationX(-500);
+                emitter.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
             else if (pad.X && axisH <= -0.1){ // Direction gauche + bras //
                 player.setAccelerationX(-300);
                 player.setMaxVelocity(280);
@@ -729,8 +744,26 @@ var game = new Phaser.Game(config);
 
 
             // ----- Direction bas ----- //
-
-            if(axisV >= 0.8 && axisH == 0){ // Direction bas //
+            if(pad.A && axisV >= 0.8 && axisH == 0){ // Direction bas //
+                player.setAccelerationY(500);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+            else if(axisV >= 0.8 && axisH == 0){ // Direction bas //
                 player.setAccelerationY(300);
                 player.setMaxVelocity(280);
                 player.setSize(180, 178);
@@ -747,17 +780,40 @@ var game = new Phaser.Game(config);
                 else if (emitter2 == true){
                     emitter.stopFollow(player);
                     emitter2.startFollow(player);
-                }
-                
+                } 
             }
 
-            else if (axisV <= -0.8 && axisH ==0 && invincible == true){ // Direction bas + invulné //
-                player.anims.play('hit_right', true);
+            else if (axisV >= 0.8 && axisH ==0 && invincible == true){ // Direction bas + invulné //
+                if (axisH >= 0.1){
+                    player.anims.play('hit_left', true);
+                }
+                else if (axisH <= -0.1){
+                    player.anims.play('hit_right', true);
+                }
             }
 
             // ----- Direction haut ----- //
 
-            if(axisV <= -0.8 && axisH ==0){ // Direction haut //
+            if(pad.A && axisV <= -0.8 && axisH ==0){ // Direction bas //
+                player.setAccelerationY(-500);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+            } 
+            else if(axisV <= -0.8 && axisH ==0){ // Direction haut //
                 player.setAccelerationY(-300);
                 player.setMaxVelocity(280);
                 player.setSize(180, 178);
@@ -777,8 +833,14 @@ var game = new Phaser.Game(config);
                 }
             }
             else if (axisV <= -0.8 && axisH ==0 && invincible == true){ // Direction haut + invulné //
-                player.anims.play('hit_right', true);
+                if (axisH <= -0.1){
+                    player.anims.play('hit_right', true);
+                }
+                else if (axisH >= 0.1){
+                    player.anims.play('hit_left', true);
+                }
             }
+            
 
             // ----- Direction haut droite ----- //
 
@@ -792,7 +854,7 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
-            else if (ajout_power_up == true && pad.A && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + power_up //
+            else if (ajout_power_up == true && pad.B && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + power_up //
                 player.anims.play('left', true);
                 player.setMaxVelocity(1500);
                 player.setVelocityX(1500);
@@ -800,6 +862,15 @@ var game = new Phaser.Game(config);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
+            }
+            else if (pad.A && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(-500);
+                emitter.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
             }
             else if (pad.X && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + bras //
                 player.setAccelerationX(300);
@@ -836,7 +907,7 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
-            else if (ajout_power_up == true && pad.A && axisH >= 0.1 && axisV >= 0.3){// Direction bas droite + power_up//
+            else if (ajout_power_up == true && pad.B && axisH >= 0.1 && axisV >= 0.3){// Direction bas droite + power_up//
                 player.anims.play('left', true);
                 player.setMaxVelocity(1500);
                 player.setVelocityX(1500);
@@ -844,6 +915,15 @@ var game = new Phaser.Game(config);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
+            }
+            else if (pad.A && axisH >= 0.1 && axisV >= 0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(500);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
             }
             else if (pad.X && axisH >= 0.1 && axisV >= 0.3){// Direction bas droite + bras //
                 player.setAccelerationX(300);
@@ -869,7 +949,7 @@ var game = new Phaser.Game(config);
 
             // ----- Direction haut gauche ----- //
 
-            if (axisH <= -0.1 && axisV >= 0.3 && invincible == true){ // Direction haut gauche + invulné //
+            if (axisH <= -0.1 && axisV <= -0.3 && invincible == true){ // Direction haut gauche + invulné //
                 player.anims.play('hit_right', true);
                 player.setAccelerationX(-300);
                 player.setAccelerationY(-300);
@@ -879,7 +959,7 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
-            else if (ajout_power_up == true && pad.A && axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche + power_up //
+            else if (ajout_power_up == true && pad.B && axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche + power_up //
                 player.anims.play('right', true);
                 player.setMaxVelocity(1500);
                 player.setVelocityX(-1500);
@@ -887,6 +967,15 @@ var game = new Phaser.Game(config);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
+            }
+            else if (pad.A && axisH <= -0.1 && axisV <=-0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(-500);
+                emitter.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
             }
             else if (pad.X && axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche + bras //
                 player.setAccelerationX(-300);
@@ -923,7 +1012,7 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
             }
-            else if (ajout_power_up == true && pad.A && axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche + power_up //
+            else if (ajout_power_up == true && pad.B && axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche + power_up //
                 player.anims.play('right', true);
                 player.setMaxVelocity(1500);
                 player.setVelocityX(-1500);
@@ -931,6 +1020,15 @@ var game = new Phaser.Game(config);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
+            }
+            else if (pad.A && axisH <= -0.1 && axisV >= 0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(500);
+                emitter.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
             }
             else if (pad.X && axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche + bras //
                 player.setAccelerationX(-300);
@@ -942,7 +1040,6 @@ var game = new Phaser.Game(config);
                 player.setOffset(-75,0);
                 player.anims.play('bras_left', true);
             }
-            
             else if (axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche //
                 player.setAccelerationX(-300);
                 player.setAccelerationY(300);
@@ -957,6 +1054,7 @@ var game = new Phaser.Game(config);
 
             if (axisV == 0 && axisH == 0 ){ // Aucune  direction donnée //
                 player.setAcceleration(0);
+                player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player); 
             }
