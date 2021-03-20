@@ -61,6 +61,8 @@ var compteur = 150;
 var power_up;
 var particles_power_up;
 var emitter_power_up;
+var ajout_power_up = false;
+var rocher;
 
 
 var KeyZ;
@@ -160,32 +162,18 @@ var game = new Phaser.Game(config);
     
     
 
-    //this.add.image( 5950,350, 'bidons').setOrigin(0).setScrollFactor(0.4);
     
     this.add.image( 6000,0, 'tuyaux').setOrigin(0).setScrollFactor(0.4);
-
-   
-    
-
-
 
     
     this.add.image( 22200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 22200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    
-
-    
     this.add.image( 21200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 21200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    
-    
     this.add.image( 20200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 20200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    
-    
     this.add.image( 19200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 19200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
-    
     this.add.image( 18200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 18200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
     this.add.image( 17200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
@@ -208,7 +196,7 @@ var game = new Phaser.Game(config);
     
     
 
-    // Ajout particules bulle //
+    // Ajout particules //
 
     particles = this.add.particles('particule_bulle');
     emitter = particles.createEmitter({
@@ -232,29 +220,25 @@ var game = new Phaser.Game(config);
 
 
    
-    particles_power_up = this.add.particles('particule_bulle');
+    particles_power_up = this.add.particles('particules_bidon');
     emitter_power_up = particles_power_up.createEmitter({
         angle: { start: 0, end: 360, steps: 32 },
         lifespan: 600,
         speed: 400,
         quantity: 32,
-        scale: { start: 1.5, end: 0 },
+        scale: { start: 8, end: 0 },
         blendMode: 'ADD',
         on: false
     });
    
 
-    /*emitter_power_up.setPosition(16970,480);
-    emitter_power_up.setSpeed(50);
-    emitter.setScale(0.2,0.5);
-    emitter_power_up.setBlendMode(Phaser.BlendModes.ADD);*/
 
     
     
 
 
     // joueur //
-    player = this.physics.add.sprite(16000,500, 'sous-marin');//depart 100, 200//
+    player = this.physics.add.sprite(16600,900, 'sous-marin');//depart 100, 200//
     player.setDamping(false);
     player.setDrag(80);
     player.setMaxVelocity(280);
@@ -297,6 +281,17 @@ var game = new Phaser.Game(config);
         duration: 1500,
         yoyo: true,
         delay: 100,
+        repeat: -1
+    });
+
+    rocher = this.physics.add.sprite(16970,600, 'ennemi_bouteille');
+    
+
+    this.tweens.add({
+        targets : rocher,
+        y: 2000,
+        duration: 1500,
+        completeDelay: 400,
         repeat: -1
     });
 
@@ -508,7 +503,7 @@ var game = new Phaser.Game(config);
 
     this.physics.add.collider(player, ennemi_bouteille, hitGrotte, null, this);
 
-    this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
+    this.physics.add.overlap(player, power_up, hitPowerUp,powerUp,null,this);
 
 
     //this.physics.add.collider(player, ennemi_bouteille,onHit, perd_vie, null, this);
@@ -745,32 +740,44 @@ var game = new Phaser.Game(config);
                 emitter2.startFollow(player);
             }*/
 
-            if (pad.X && axisH >= 0.1){
+
+            if (ajout_power_up == true && pad.A && axisH >= 0.1){
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.X && axisH >= 0.1){
                 player.setAccelerationX(300);
                 emitter2.startFollow(player);
+                player.setMaxVelocity(280);
                 player.setSize(350, 178);
                 player.setOffset(-95,0);
                 player.anims.play('bras_right', true);
                 
             }
+            
             else if (axisH >= 0.1 && invincible == true){
                 player.anims.play('hit_left', true);
+                player.setMaxVelocity(280);
                 player.setAccelerationX(300);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
-                player.setOffset(0,0);
-
-                
+                player.setOffset(0,0); 
             }
             else if(axisH >= 0.1){
                 player.anims.play('left', true);
+                player.setMaxVelocity(280);
                 player.setAccelerationX(300);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
-                console.log(player.body.speed);
+                console.log(ajout_power_up);
 
                 algues.anims.play('algues_1',true);
                 algues_2.anims.play('algues_1',true);
@@ -781,10 +788,19 @@ var game = new Phaser.Game(config);
                 algues_7.anims.play('algues_1',true);
             }
             
+            if (ajout_power_up == true && pad.A && axisH <= -0.1){
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
 
-
-            if (pad.X && axisH <= -0.1){
+            else if (pad.X && axisH <= -0.1){
                 player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 player.setSize(350, 178);
                 player.setOffset(-75,0);
@@ -793,6 +809,7 @@ var game = new Phaser.Game(config);
             else if (axisH <= -0.1 && invincible == true){
                 player.anims.play('hit_right', true);
                 player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
@@ -801,6 +818,7 @@ var game = new Phaser.Game(config);
             else if(axisH <= -0.1){
                 player.setAccelerationX(-300);
                 player.anims.play('right', true);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
@@ -812,6 +830,7 @@ var game = new Phaser.Game(config);
 
             if(axisV >= 0.8 && axisH == 0){
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 player.setSize(180, 178);
                 if (player.anims.play('right')){
                     player.setOffset(0,0);
@@ -836,6 +855,7 @@ var game = new Phaser.Game(config);
 
             if(axisV <= -0.8 && axisH ==0){
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 player.setSize(180, 178);
                 if (player.anims.play('right')){
                     player.setOffset(0,0);
@@ -856,10 +876,19 @@ var game = new Phaser.Game(config);
                 player.anims.play('hit_right', true);
             }
 
-
-            if (pad.X && axisH >= 0.1 && axisV <=-0.3){
+            if (ajout_power_up == true && pad.A && axisH >= 0.1 && axisV <=-0.3){
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.X && axisH >= 0.1 && axisV <=-0.3){
                 player.setAccelerationX(300);
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
@@ -870,6 +899,7 @@ var game = new Phaser.Game(config);
                 player.anims.play('hit_left', true);
                 player.setAccelerationX(300);
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
@@ -878,6 +908,7 @@ var game = new Phaser.Game(config);
             else if (axisH >= 0.1 && axisV <=-0.3){
                 player.setAccelerationX(300);
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 player.anims.play('left', true);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -887,10 +918,19 @@ var game = new Phaser.Game(config);
             }
 
             
-
-            if (pad.X && axisH >= 0.1 && axisV >= 0.3){
+            if (ajout_power_up == true && pad.A && axisH >= 0.1 && axisV >= 0.3){
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.X && axisH >= 0.1 && axisV >= 0.3){
                 player.setAccelerationX(300);
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(350, 178);
@@ -901,6 +941,7 @@ var game = new Phaser.Game(config);
                 player.anims.play('hit_left', true);
                 player.setAccelerationX(300);
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
@@ -909,6 +950,7 @@ var game = new Phaser.Game(config);
             else if (axisH >= 0.1 && axisV >= 0.3){
                 player.setAccelerationX(300);
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 player.anims.play('left', true);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -917,10 +959,19 @@ var game = new Phaser.Game(config);
             }
 
             
-
-            if (pad.X && axisH <= -0.1 && axisV <=-0.3){
+            if (ajout_power_up == true && pad.A && axisH <= -0.1 && axisV <=-0.3){
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.X && axisH <= -0.1 && axisV <=-0.3){
                 player.setAccelerationX(-300);
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player)
                 player.setSize(350, 178);
@@ -931,6 +982,7 @@ var game = new Phaser.Game(config);
                 player.anims.play('hit_right', true);
                 player.setAccelerationX(-300);
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
@@ -940,6 +992,7 @@ var game = new Phaser.Game(config);
             else if (axisH <= -0.1 && axisV <=-0.3){
                 player.setAccelerationX(-300);
                 player.setAccelerationY(-300);
+                player.setMaxVelocity(280);
                 player.anims.play('right', true);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
@@ -947,10 +1000,19 @@ var game = new Phaser.Game(config);
                 player.setOffset(0,0);
             }
             
-
-            if (pad.X && axisH <= -0.1 && axisV >= 0.3){
+            if (ajout_power_up == true && pad.A && axisH <= -0.1 && axisV >= 0.3){
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.X && axisH <= -0.1 && axisV >= 0.3){
                 player.setAccelerationX(-300);
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(350, 178);
@@ -961,6 +1023,7 @@ var game = new Phaser.Game(config);
                 player.anims.play('hit_right', true);
                 player.setAccelerationX(-300);
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
                 player.setSize(180, 178);
@@ -969,6 +1032,7 @@ var game = new Phaser.Game(config);
             else if (axisH <= -0.1 && axisV >= 0.3){
                 player.setAccelerationX(-300);
                 player.setAccelerationY(300);
+                player.setMaxVelocity(280);
                 player.anims.play('right', true);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
@@ -1001,6 +1065,10 @@ var game = new Phaser.Game(config);
             }
     }
 
+    function powerUp (player){
+
+        ajout_power_up = true;
+    }
 
     function kill (player, ennemi_bouteille) 
         {
