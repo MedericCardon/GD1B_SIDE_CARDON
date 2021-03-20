@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 90 },//105
-                debug: true
+                debug: false
             }
         },
         scene: {
@@ -51,6 +51,8 @@ var particles_bidon2;
 var emitter_bidon2;
 var ennemi_bouteille;
 var waste_monster;
+var waste_monster_silhouete;
+var tween_monster;
 var pad;
 var reparation1 = true;
 var reparation2 = true;
@@ -69,6 +71,9 @@ var rocher_04;
 var rocher_05;
 var gameOver = false;
 var gameOverText;
+var textTuto_01;
+var textTuto_02;
+var dialogue_01;
 
 // ----- variables touche clavier ----- //
 
@@ -100,6 +105,7 @@ var game = new Phaser.Game(config);
         this.load.image('station', 'assets/background_station.png');
         this.load.image('tuyaux','assets/Tuyaux.png');
         this.load.image('bidons','assets/bidons.png');
+        this.load.image('waste_monster_silhouete','assets/waste_monster/waste_monster-assets/waste_monstre_silhouete.png')
 
         // ----- spriteSheet sous marin + algues ----- //
 
@@ -117,6 +123,7 @@ var game = new Phaser.Game(config);
 
         this.load.image('reparation','assets/Cle.png');
         this.load.image('HUD','assets/HUD_sous_marin.png');
+        this.load.image('panneau_dialogue','assets/panneau_dialogue.png')
 
         // ----- assests particules ----- //
 
@@ -145,8 +152,14 @@ var game = new Phaser.Game(config);
         this.load.image('block_passage','assets/assets_grotte/Entree_grotte-assets/block_grotte_passage_01.png');
         this.load.image('rocher_01','assets/assets_grotte/Entree_grotte-assets/rocher_01.png');
         this.load.image('rocher_02','assets/assets_grotte/Entree_grotte-assets/rocher_02.png');
+
+        // ----- texte tuto ----- //
+
+        this.load.image('texte_tuto_01','assets/texte_tuto/texte_tuto-assets/texte_tuto_01.png');
+        this.load.image('texte_tuto_02','assets/texte_tuto/texte_tuto-assets/texte_tuto_02.png');
+        this.load.image('texte_tuto_03','assets/texte_tuto/texte_tuto-assets/texte_tuto_03.png');
     }
-    
+
     function create ()
     {
 
@@ -247,10 +260,48 @@ var game = new Phaser.Game(config);
             blendMode: 'ADD',
             on: false
         });
+
+        // ----- Texte Tuto ----- //
+
+        textTuto_01 = this.physics.add.sprite(500, 400, 'texte_tuto_01');
+        textTuto_01.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_01,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        textTuto_02 = this.physics.add.sprite(1250, 200, 'texte_tuto_02');
+        textTuto_02.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_02,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        textTuto_03 = this.physics.add.sprite(2000, 400, 'texte_tuto_03');
+        textTuto_03.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_03,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(4000,300, 'sous-marin');//depart 100, 200//
+        player = this.physics.add.sprite(8000,300, 'sous-marin');//depart 100, 200//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -263,6 +314,8 @@ var game = new Phaser.Game(config);
         waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster');
         waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
         waste_monster.setCollideWorldBounds(true);
+
+        
         
         // ----- Recifs premier plan première zone ----- //
 
@@ -281,6 +334,20 @@ var game = new Phaser.Game(config);
         algues_5 = this.add.sprite(11470, 610, 'algues');
         algues_6 = this.add.sprite(12730,610, 'algues');
         algues_7 = this.add.sprite(13880,610, 'algues');
+
+        // ----- silhouete monstre ----- //
+        waste_monster_silhouete = this.physics.add.sprite(7000,300,'waste_monster_silhouete').setScale(2.5,2.5).setAlpha(0);
+        waste_monster_silhouete.body.setAllowGravity(false);
+
+       tween_monster = this.tweens.add({
+            targets: waste_monster_silhouete,
+            x: 15000,
+            duration: 3000,
+            paused: true,
+            repeat: 0
+            
+    });
+
 
         // ----- Entree grotte et pilier_01 (Le sous marin passe à travers) ----- //
 
@@ -431,6 +498,7 @@ var game = new Phaser.Game(config);
         // ----- HUD ----- //
 
         this.add.image(10,10, 'HUD').setOrigin(0).setScrollFactor(0);
+        this.add.image(10,540, 'panneau_dialogue').setOrigin(0).setScrollFactor(0);
 
         // ----- Point de vie du joueur sous forme de cle de reparation ----- //
 
@@ -528,12 +596,23 @@ var game = new Phaser.Game(config);
         });
 
         // ----- Texte ----- //
+        dialogue_01 = [
+            "Salut Sheman, on a perdu",
+            "",
+            "le signal d'une de nos ",
+            "",
+            "installation tu pourras",
+            "",
+             "aller y jeter un oeil ?"
+        ];
             
-        text = this.add.text(10, 120, '', { font: '16px Courier', fill: '#00ff00' });
+        text = this.add.text(60, 590, '', { font: '12px Courier', fill: '#00ff00' });
         text.setScrollFactor(0);
 
         gameOverText = this.add.text(500, 300, '', { fontSize: '50px', fill: '#fff', align: 'center' });
         gameOverText.setScrollFactor(0);
+
+        
 
         // ----- Overlap ----- //
         
@@ -544,6 +623,7 @@ var game = new Phaser.Game(config);
         this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
         this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
         this.physics.add.overlap(player, ennemi_bouteille, hitEnnemi, null, this);
+        this.physics.add.overlap(player,waste_monster_silhouete, tremblement,null,this);
 
         // ----- Collider ----- //
 
@@ -560,11 +640,19 @@ var game = new Phaser.Game(config);
         if (gameOver){
             return;
         }
-        if(player.x >= 6000){
+        if(player.x >= 800){
             //text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
-            text.setText('Fin de transmision...');
-            
+            text.setText(dialogue_01);
         }
+
+        if(player.x >= 10000){
+            tween_monster.play();
+            waste_monster_silhouete.setAlpha(1);
+        }
+        if (player.x >= 12000){
+            waste_monster_silhouete.destroy();
+        }
+
         // Keyboard //
 
         if (keyQ.isDown)
@@ -1107,7 +1195,10 @@ var game = new Phaser.Game(config);
             }
     }
     
-    
+    function tremblement(player,waste_monster_silhouete){
+        this.cameras.main.shake(50);
+    }
+
     function hitPowerUp (player, power_up){ // attraper power_up //
         if(pad.X){
             power_up.destroy(true,true);
