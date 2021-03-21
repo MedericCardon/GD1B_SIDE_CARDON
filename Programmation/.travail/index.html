@@ -60,6 +60,7 @@ var reparation3 = true;
 var playerPdv = 3;
 var invincible = false ;
 var compteur = 150;
+var compteur_restart = 300;
 var power_up;
 var particles_power_up;
 var emitter_power_up;
@@ -74,6 +75,7 @@ var gameOverText;
 var textTuto_01;
 var textTuto_02;
 var dialogue_01;
+var timeRestart;
 
 // ----- variables touche clavier ----- //
 
@@ -301,7 +303,7 @@ var game = new Phaser.Game(config);
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(8000,300, 'sous-marin');//depart 100, 200//
+        player = this.physics.add.sprite(9000,300, 'sous-marin');//depart 100, 200//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -627,19 +629,19 @@ var game = new Phaser.Game(config);
 
         // ----- Collider ----- //
 
-        
         this.physics.add.collider(player,grotte,hitGrotte,null,this);
         this.physics.add.collider(player,recif_block,hitGrotte,null,this);
         this.physics.add.collider(player, recif,hitGrotte,null,this);
+
+        // ----- Time restart ----- //
+
+        timeRestart = this.time.addEvent({ delay: 7880, callback: restart, callbackScope: this, repeat: -1, startAt: 5000});
 
     }
 
     function update ()
     {
 
-        if (gameOver){
-            return;
-        }
         if(player.x >= 800){
             //text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
             text.setText(dialogue_01);
@@ -655,7 +657,7 @@ var game = new Phaser.Game(config);
 
         // Keyboard //
 
-        if (keyQ.isDown)
+        /*if (keyQ.isDown)
         {
             //player.setVelocityX(-150);
             this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
@@ -699,7 +701,7 @@ var game = new Phaser.Game(config);
             player.setVelocityY(150);
             player.anims.play('right', true);
             
-        }
+        }*/
     
         if (this.input.gamepad.total === 0)
         {
@@ -1143,6 +1145,7 @@ var game = new Phaser.Game(config);
                 invincible = false ;
             }
         }
+        
     }
     
     // ----- Fonctions ----- //
@@ -1162,8 +1165,7 @@ var game = new Phaser.Game(config);
         }
         if (playerPdv == 0){
             reparation1.destroy(true,true);
-            this.physics.pause();
-            player.destroy(true,true);
+            player.setAlpha(0);
             particles_power_up.emitParticleAt(player.x, player.y)
             this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
             gameOverText.setText('Game over');
@@ -1184,17 +1186,31 @@ var game = new Phaser.Game(config);
             reparation2.destroy(true,true);
             reparation3.destroy(true,true);
             if(playerPdv == 0 ){
-                this.physics.pause();
-                player.destroy(true,true);
+                player.setAlpha(0);
                 particles_power_up.emitParticleAt(player.x, player.y)
                 this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
                 gameOverText.setText('Game over');
                 gameOver = true;
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player);
+                rocher_01.destroy();
+                rocher_02.destroy();
+                rocher_03.destroy();
+                rocher_04.destroy();
             }
     }
     
+
+    function restart (scene){
+        if (gameOver == true){
+            this.scene.restart();
+            player.setMaxVelocity(0);
+            player.setAcceleration(0)
+            gameOver = false;
+            
+        }
+    }
+
     function tremblement(player,waste_monster_silhouete){
         this.cameras.main.shake(50);
     }
@@ -1229,8 +1245,7 @@ var game = new Phaser.Game(config);
             }
             if (playerPdv == 0){
                 reparation1.destroy(true,true);
-                this.physics.pause();
-                player.destroy(true,true);
+                player.setAlpha(0);
                 particles_power_up.emitParticleAt(player.x, player.y)
                 this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
                 gameOverText.setText('Game over');
