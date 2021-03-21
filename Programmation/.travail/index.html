@@ -49,7 +49,12 @@ var particles_bidon;
 var emitter_bidon;
 var particles_bidon2;
 var emitter_bidon2;
-var ennemi_bouteille;
+var ennemi_bouteille_01;
+var ennemi_bouteille_02;
+var ennemi_bouteille_03;
+var ennemi_bouteille_04;
+var ennemi_bouteille_05;
+var ennemi_bouteille_06;
 var waste_monster;
 var waste_monster_silhouete;
 var tween_monster;
@@ -71,9 +76,12 @@ var rocher_03;
 var rocher_04;
 var rocher_05;
 var gameOver = false;
-var gameOverText;
 var textTuto_01;
 var textTuto_02;
+var textTuto_03;
+var textTuto_04;
+var text_gameOver;
+
 var dialogue_01;
 var timeRestart;
 
@@ -118,7 +126,7 @@ var game = new Phaser.Game(config);
 
         // ----- spriteSheet ennemies ----- //
 
-        this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.75, frameHeight: 391});
+        this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.214286, frameHeight: 391});
         this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 101, frameHeight: 53});
 
         // ----- HUD + vie ----- // 
@@ -155,11 +163,13 @@ var game = new Phaser.Game(config);
         this.load.image('rocher_01','assets/assets_grotte/Entree_grotte-assets/rocher_01.png');
         this.load.image('rocher_02','assets/assets_grotte/Entree_grotte-assets/rocher_02.png');
 
-        // ----- texte tuto ----- //
+        // ----- texte ----- //
 
         this.load.image('texte_tuto_01','assets/texte_tuto/texte_tuto-assets/texte_tuto_01.png');
         this.load.image('texte_tuto_02','assets/texte_tuto/texte_tuto-assets/texte_tuto_02.png');
         this.load.image('texte_tuto_03','assets/texte_tuto/texte_tuto-assets/texte_tuto_03.png');
+        this.load.image('texte_tuto_04','assets/texte_tuto/texte_tuto-assets/texte_tuto_04.png');
+        this.load.image('texte_gameOver','assets/texte_tuto/texte_tuto-assets/gameOver.png');
     }
 
     function create ()
@@ -237,7 +247,6 @@ var game = new Phaser.Game(config);
             speed: 50,
             scale: { start: 0.2, end: 0.5 },
             blendMode: 'ADD',
-            
         });
 
 
@@ -263,7 +272,7 @@ var game = new Phaser.Game(config);
             on: false
         });
 
-        // ----- Texte Tuto ----- //
+        // ----- Texte Tuto + game over----- //
 
         textTuto_01 = this.physics.add.sprite(500, 400, 'texte_tuto_01');
         textTuto_01.body.setAllowGravity(false);
@@ -300,10 +309,25 @@ var game = new Phaser.Game(config);
             delay: 100,
             repeat: -1
         });
+
+        textTuto_04 = this.physics.add.sprite(16950, 250, 'texte_tuto_04').setAlpha(0);
+        textTuto_04.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_04,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        text_gameOver = this.add.sprite(640,360,'texte_gameOver').setAlpha(0);
+        text_gameOver.setScrollFactor(0);
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(9000,300, 'sous-marin');//depart 100, 200//
+        player = this.physics.add.sprite(22000,1000, 'sous-marin');//depart 100, 200//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -313,12 +337,112 @@ var game = new Phaser.Game(config);
 
         // ----- Waste monster (boss) ----- //
 
-        waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster');
+        waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster').setScale(1.2,1.2);
         waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
         waste_monster.setCollideWorldBounds(true);
 
+        this.tweens.add({
+            targets: waste_monster,
+            props: {
+                x: { value: 21700, duration: 2000, flipX: true },
+                y: { value: 800, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        // ----- Ennemi "bouteille" ----- //
         
+        ennemi_bouteille_01 = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
+        ennemi_bouteille_01.setSize(70,50);
+        ennemi_bouteille_01.body.setAllowGravity(false); // gravité false pour les ennemis //
+        ennemi_bouteille_01.setCollideWorldBounds(true);
         
+        this.tweens.add({
+            targets: ennemi_bouteille_01,
+            y: 400,
+            duration: 2000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        ennemi_bouteille_02 = this.physics.add.sprite(7800,300, 'ennemi_bouteille');
+        ennemi_bouteille_02.setSize(70,50);
+        ennemi_bouteille_02.body.setAllowGravity(false); 
+        ennemi_bouteille_02.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_02,
+            props: {
+                x: { value: 7500, duration: 2500, flipX: true },
+                y: { value: 600, duration: 5000,  },
+            },
+            yoyo: true,
+            repeat: -1
+        });
+        
+
+        ennemi_bouteille_03 = this.physics.add.sprite(8000,550, 'ennemi_bouteille');
+        ennemi_bouteille_03.setSize(70,50);
+        ennemi_bouteille_03.body.setAllowGravity(false); 
+        ennemi_bouteille_03.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_03,
+            props: {
+                x: { value: 7200, duration: 3000, flipX: true },
+                y: { value: 200, duration: 5000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_04 = this.physics.add.sprite(13500,800, 'ennemi_bouteille');
+        ennemi_bouteille_04.setSize(70,50);
+        ennemi_bouteille_04.body.setAllowGravity(false); 
+        ennemi_bouteille_04.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_04,
+            props: {
+                x: { value: 13400, duration: 1000, flipX: true },
+                y: { value: 300, duration: 2000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_05 = this.physics.add.sprite(15800,1000, 'ennemi_bouteille').setFlipX(true);
+        ennemi_bouteille_05.setSize(70,50);
+        ennemi_bouteille_05.body.setAllowGravity(false); 
+        ennemi_bouteille_05.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_05,
+            props: {
+                x: { value: 16100, duration: 2000, flipX: true },
+                y: { value: 300, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_06 = this.physics.add.sprite(18100,1200, 'ennemi_bouteille').setFlipX(true);
+        ennemi_bouteille_06.setSize(70,50);
+        ennemi_bouteille_06.body.setAllowGravity(false); 
+        ennemi_bouteille_06.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_06,
+            props: {
+                x: { value: 18500, duration: 2000, flipX: true },
+                y: { value: 900, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
         // ----- Recifs premier plan première zone ----- //
 
         recif = this.physics.add.staticGroup();
@@ -341,15 +465,14 @@ var game = new Phaser.Game(config);
         waste_monster_silhouete = this.physics.add.sprite(7000,300,'waste_monster_silhouete').setScale(2.5,2.5).setAlpha(0);
         waste_monster_silhouete.body.setAllowGravity(false);
 
-       tween_monster = this.tweens.add({
+        tween_monster = this.tweens.add({
             targets: waste_monster_silhouete,
             x: 15000,
             duration: 3000,
             paused: true,
             repeat: 0
             
-    });
-
+        });
 
         // ----- Entree grotte et pilier_01 (Le sous marin passe à travers) ----- //
 
@@ -410,22 +533,6 @@ var game = new Phaser.Game(config);
             y: 1700,
             duration: 1500,
             completeDelay: 100,
-            repeat: -1
-        });
-
-        // ----- Ennemi "bouteille" ----- //
-        
-        ennemi_bouteille = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
-        ennemi_bouteille.setSize(70,50);
-        ennemi_bouteille.body.setAllowGravity(false); // gravité false pour les ennemis //
-        ennemi_bouteille.setCollideWorldBounds(true);
-        
-        this.tweens.add({
-            targets: ennemi_bouteille,
-            y: 400,
-            duration: 2000,
-            yoyo: true,
-            delay: 100,
             repeat: -1
         });
 
@@ -518,6 +625,7 @@ var game = new Phaser.Game(config);
         this.cameras.main.setBounds(0, 0, 1280 * 20, 1440);
         this.physics.world.setBounds(0, 0, 1280 * 20, 1440);
         this.cameras.main.startFollow(player, true, 0.05, 0.05);
+        this.cameras.main.fadeIn(2000);
 
         // ----- Controles ( pad & clavier) ----- //
 
@@ -549,11 +657,12 @@ var game = new Phaser.Game(config);
         });
 
         this.anims.create({
-            key: 'waste_monster',
-            frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 3}),
-            frameRate : 7,
+            key: 'waste_monster_anim',
+            frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 6}),
+            frameRate : 10,
             repeat: -1
         });
+
 
         this.anims.create({
             key : 'ennemi_bouteille_01',
@@ -611,8 +720,7 @@ var game = new Phaser.Game(config);
         text = this.add.text(60, 590, '', { font: '12px Courier', fill: '#00ff00' });
         text.setScrollFactor(0);
 
-        gameOverText = this.add.text(500, 300, '', { fontSize: '50px', fill: '#fff', align: 'center' });
-        gameOverText.setScrollFactor(0);
+        
 
         
 
@@ -622,9 +730,9 @@ var game = new Phaser.Game(config);
         this.physics.add.overlap(player, rocher_02,hitRocher,null,this);
         this.physics.add.overlap(player, rocher_03,hitRocher,null,this);
         this.physics.add.overlap(player, rocher_04,hitRocher,null,this);
-        this.physics.add.overlap(player, ennemi_bouteille, kill, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_01, kill, null, this);
         this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
-        this.physics.add.overlap(player, ennemi_bouteille, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_01, hitEnnemi, null, this);
         this.physics.add.overlap(player,waste_monster_silhouete, tremblement,null,this);
 
         // ----- Collider ----- //
@@ -643,8 +751,8 @@ var game = new Phaser.Game(config);
     {
 
         if(player.x >= 800){
-            //text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
-            text.setText(dialogue_01);
+            text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
+            //text.setText(dialogue_01);
         }
 
         if(player.x >= 10000){
@@ -776,6 +884,7 @@ var game = new Phaser.Game(config);
                 algues_5.anims.play('algues_1',true);
                 algues_6.anims.play('algues_1',true);
                 algues_7.anims.play('algues_1',true);
+                waste_monster.anims.play('waste_monster_anim',true);
             }
 
             // ----- Direction gauche----- //
@@ -1137,6 +1246,13 @@ var game = new Phaser.Game(config);
                 emitter2.stopFollow(player); 
             }
         }
+        /*if (waste_monster.x >= 21500){
+            waste_monster.anims.play('waste_monster_anim');//flip
+            waste_monster.setAlpha(1);
+        }
+        if(waste_monster.x <= 22500){
+            waste_monster.setAlpha(0);
+        }*/
 
         if(invincible == true){ // relance du compteur d'invulné //
             compteur-- ;
@@ -1168,7 +1284,7 @@ var game = new Phaser.Game(config);
             player.setAlpha(0);
             particles_power_up.emitParticleAt(player.x, player.y)
             this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
-            gameOverText.setText('Game over');
+            text_gameOver.setAlpha(1);
             gameOver = true;
             emitter.stopFollow(player);
             emitter2.stopFollow(player);
@@ -1188,8 +1304,8 @@ var game = new Phaser.Game(config);
             if(playerPdv == 0 ){
                 player.setAlpha(0);
                 particles_power_up.emitParticleAt(player.x, player.y)
-                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
-                gameOverText.setText('Game over');
+                this.cameras.main.fadeOut(4000);
+                text_gameOver.setAlpha(1);
                 gameOver = true;
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player);
@@ -1204,15 +1320,17 @@ var game = new Phaser.Game(config);
     function restart (scene){
         if (gameOver == true){
             this.scene.restart();
-            player.setMaxVelocity(0);
-            player.setAcceleration(0)
             gameOver = false;
-            
+            ajout_power_up = false;
+            text_gameOver.setAlpha(0);
+            playerPdv = 3;
         }
     }
 
     function tremblement(player,waste_monster_silhouete){
-        this.cameras.main.shake(50);
+        if (waste_monster_silhouete.x >=9000){
+            this.cameras.main.shake(50);
+        }
     }
 
     function hitPowerUp (player, power_up){ // attraper power_up //
@@ -1220,12 +1338,13 @@ var game = new Phaser.Game(config);
             power_up.destroy(true,true);
             particles_power_up.emitParticleAt(power_up.x, power_up.y)
             ajout_power_up = true;
+            textTuto_04.setAlpha(1);
             }
     }
 
     function kill (player, ennemi_bouteille){
             if (pad.X){
-                ennemi_bouteille.destroy(true, true);
+                ennemi_bouteille_01.destroy(true, true);
             }
         }
 
@@ -1248,7 +1367,7 @@ var game = new Phaser.Game(config);
                 player.setAlpha(0);
                 particles_power_up.emitParticleAt(player.x, player.y)
                 this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
-                gameOverText.setText('Game over');
+                text_gameOver.setAlpha(1);
                 gameOver = true;
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player);
