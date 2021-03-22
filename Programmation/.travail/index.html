@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 90 },//105
-                debug: false
+                debug: true
             }
         },
         scene: {
@@ -35,6 +35,7 @@ var config = {
         }
     };
 // ----- variables ----- //
+
 var player;
 var cursors;
 var recif;
@@ -55,8 +56,15 @@ var ennemi_bouteille_03;
 var ennemi_bouteille_04;
 var ennemi_bouteille_05;
 var ennemi_bouteille_06;
+var etat_ennemi_bouteille_01 = true;
+var etat_ennemi_bouteille_02 = true;
+var etat_ennemi_bouteille_03 = true;
+var etat_ennemi_bouteille_04 = true;
+var etat_ennemi_bouteille_05 = true;
+var etat_ennemi_bouteille_06 = true;
 var waste_monster;
-var waste_monster_silhouete;
+var waste_monster_pdv = 3;
+var waste_monster_silhouette;
 var tween_monster;
 var pad;
 var reparation1 = true;
@@ -64,7 +72,9 @@ var reparation2 = true;
 var reparation3 = true;
 var playerPdv = 3;
 var invincible = false ;
+var invincible_boss = false;
 var compteur = 150;
+var compteur_boss = 90;
 var compteur_restart = 300;
 var power_up;
 var particles_power_up;
@@ -115,7 +125,7 @@ var game = new Phaser.Game(config);
         this.load.image('station', 'assets/background_station.png');
         this.load.image('tuyaux','assets/Tuyaux.png');
         this.load.image('bidons','assets/bidons.png');
-        this.load.image('waste_monster_silhouete','assets/waste_monster/waste_monster-assets/waste_monstre_silhouete.png')
+        this.load.image('waste_monster_silhouette','assets/waste_monster/waste_monster-assets/waste_monstre_silhouete.png')
 
         // ----- spriteSheet sous marin + algues ----- //
 
@@ -327,7 +337,7 @@ var game = new Phaser.Game(config);
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(22000,1000, 'sous-marin');//depart 100, 200//
+        player = this.physics.add.sprite(4500,500, 'sous-marin');//depart 100, 200//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -353,17 +363,18 @@ var game = new Phaser.Game(config);
 
         // ----- Ennemi "bouteille" ----- //
         
-        ennemi_bouteille_01 = this.physics.add.sprite(3000,100, 'ennemi_bouteille');
+        ennemi_bouteille_01 = this.physics.add.sprite(4400,300, 'ennemi_bouteille');
         ennemi_bouteille_01.setSize(70,50);
         ennemi_bouteille_01.body.setAllowGravity(false); // gravité false pour les ennemis //
         ennemi_bouteille_01.setCollideWorldBounds(true);
         
         this.tweens.add({
             targets: ennemi_bouteille_01,
-            y: 400,
-            duration: 2000,
+            props: {
+                x: { value: 4200, duration: 3000, flipX: true },
+                y: { value: 600, duration: 3000},
+            },
             yoyo: true,
-            delay: 100,
             repeat: -1
         });
 
@@ -460,19 +471,6 @@ var game = new Phaser.Game(config);
         algues_5 = this.add.sprite(11470, 610, 'algues');
         algues_6 = this.add.sprite(12730,610, 'algues');
         algues_7 = this.add.sprite(13880,610, 'algues');
-
-        // ----- silhouete monstre ----- //
-        waste_monster_silhouete = this.physics.add.sprite(7000,300,'waste_monster_silhouete').setScale(2.5,2.5).setAlpha(0);
-        waste_monster_silhouete.body.setAllowGravity(false);
-
-        tween_monster = this.tweens.add({
-            targets: waste_monster_silhouete,
-            x: 15000,
-            duration: 3000,
-            paused: true,
-            repeat: 0
-            
-        });
 
         // ----- Entree grotte et pilier_01 (Le sous marin passe à travers) ----- //
 
@@ -590,6 +588,18 @@ var game = new Phaser.Game(config);
         grotte.create(19180,975,'bas_grotte_boss').setOrigin(0).setScrollFactor(1).setSize(6000,100).setOffset(770,600);
         grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);   
         grotte.create(19780,0,'block_passage').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
+
+        // ----- silhouette monstre ----- //
+        waste_monster_silhouette = this.physics.add.sprite(7000,400,'waste_monster_silhouette').setScale(1.5,1.5).setAlpha(0);
+        waste_monster_silhouette.body.setAllowGravity(false);
+
+        tween_monster = this.tweens.add({
+            targets: waste_monster_silhouette,
+            x: 15000,
+            duration: 7000,
+            paused: true,
+            repeat: 0 
+        });
         
         // ----- Filtres de lumières avec rayon ('light') hors de la grotte ----- // 
         
@@ -603,7 +613,7 @@ var game = new Phaser.Game(config);
         this.add.image(1280,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
         this.add.image(2560,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
         this.add.image(3840,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
-        
+
         // ----- HUD ----- //
 
         this.add.image(10,10, 'HUD').setOrigin(0).setScrollFactor(0);
@@ -730,16 +740,34 @@ var game = new Phaser.Game(config);
         this.physics.add.overlap(player, rocher_02,hitRocher,null,this);
         this.physics.add.overlap(player, rocher_03,hitRocher,null,this);
         this.physics.add.overlap(player, rocher_04,hitRocher,null,this);
-        this.physics.add.overlap(player, ennemi_bouteille_01, kill, null, this);
-        this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
+
+        this.physics.add.overlap(player, ennemi_bouteille_01, kill_ennemi_01, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_02, kill_ennemi_02, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_03, kill_ennemi_03, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_04, kill_ennemi_04, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_05, kill_ennemi_05, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_06, kill_ennemi_06, null, this);
+
         this.physics.add.overlap(player, ennemi_bouteille_01, hitEnnemi, null, this);
-        this.physics.add.overlap(player,waste_monster_silhouete, tremblement,null,this);
+        this.physics.add.overlap(player, ennemi_bouteille_02, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_03, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_04, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_05, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_06, hitEnnemi, null, this);
+
+        
+
+        this.physics.add.overlap(player,waste_monster_silhouette, tremblement,null,this);
+        this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
+        
 
         // ----- Collider ----- //
 
         this.physics.add.collider(player,grotte,hitGrotte,null,this);
         this.physics.add.collider(player,recif_block,hitGrotte,null,this);
         this.physics.add.collider(player, recif,hitGrotte,null,this);
+        this.physics.add.collider(player,waste_monster,combatBoss,null,this);
+        
 
         // ----- Time restart ----- //
 
@@ -751,16 +779,16 @@ var game = new Phaser.Game(config);
     {
 
         if(player.x >= 800){
-            text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
-            //text.setText(dialogue_01);
+            //text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
+            text.setText(waste_monster_pdv);//dialogue_01
         }
 
         if(player.x >= 10000){
             tween_monster.play();
-            waste_monster_silhouete.setAlpha(1);
+            waste_monster_silhouette.setAlpha(1);
         }
         if (player.x >= 12000){
-            waste_monster_silhouete.destroy();
+            waste_monster_silhouette.destroy();
         }
 
         // Keyboard //
@@ -937,7 +965,7 @@ var game = new Phaser.Game(config);
             // ----- Direction bas ----- //
 
             if(pad.A && axisV >= 0.8 && axisH == 0){ // Direction bas + acceleration //
-                player.setAccelerationY(500);
+                player.setAccelerationY(400);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
                 if (player.anims.play('right')){
@@ -956,7 +984,7 @@ var game = new Phaser.Game(config);
                 } 
             }
             else if(axisV >= 0.8 && axisH == 0){ // Direction bas //
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 player.setSize(180, 178);
                 if (player.anims.play('right')){
@@ -987,7 +1015,7 @@ var game = new Phaser.Game(config);
             // ----- Direction haut ----- //
 
             if(pad.A && axisV <= -0.8 && axisH ==0){ // Direction haut + acceleration //
-                player.setAccelerationY(-500);
+                player.setAccelerationY(-400);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
                 if (player.anims.play('right')){
@@ -1006,7 +1034,7 @@ var game = new Phaser.Game(config);
                 }
             } 
             else if(axisV <= -0.8 && axisH ==0){ // Direction haut //
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 player.setSize(180, 178);
                 if (player.anims.play('right')){
@@ -1039,7 +1067,7 @@ var game = new Phaser.Game(config);
             if (axisH >= 0.1 && axisV <=-0.3 && invincible == true){ // Direction haut droite + invulné //
                 player.anims.play('hit_left', true);
                 player.setAccelerationX(300);
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -1057,7 +1085,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.A && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + acceleration de la nage //
                 player.setAccelerationX(500);
-                player.setAccelerationY(-500);
+                player.setAccelerationY(-400);
                 emitter.stopFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
@@ -1066,7 +1094,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.X && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + bras //
                 player.setAccelerationX(300);
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -1076,7 +1104,7 @@ var game = new Phaser.Game(config);
             }
             else if (axisH >= 0.1 && axisV <=-0.3){ //Direction haut droite //
                 player.setAccelerationX(300);
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 player.anims.play('left', true);
                 emitter.stopFollow(player);
@@ -1091,7 +1119,7 @@ var game = new Phaser.Game(config);
             if (axisH >= 0.1 && axisV >= 0.3 && invincible == true){ // Direction bas droite + invulné //
                 player.anims.play('hit_left', true);
                 player.setAccelerationX(300);
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -1109,7 +1137,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.A && axisH >= 0.1 && axisV >= 0.3){ // Direction haut droite + acceleration de la nage //
                 player.setAccelerationX(500);
-                player.setAccelerationY(500);
+                player.setAccelerationY(400);
                 emitter2.startFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
@@ -1118,7 +1146,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.X && axisH >= 0.1 && axisV >= 0.3){// Direction bas droite + bras //
                 player.setAccelerationX(300);
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
@@ -1128,7 +1156,7 @@ var game = new Phaser.Game(config);
             }
             else if (axisH >= 0.1 && axisV >= 0.3){// Direction bas droite //
                 player.setAccelerationX(300);
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 player.anims.play('left', true);
                 emitter.stopFollow(player);
@@ -1142,7 +1170,7 @@ var game = new Phaser.Game(config);
             if (axisH <= -0.1 && axisV <= -0.3 && invincible == true){ // Direction haut gauche + invulné //
                 player.anims.play('hit_right', true);
                 player.setAccelerationX(-300);
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
@@ -1160,7 +1188,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.A && axisH <= -0.1 && axisV <=-0.3){ // Direction haut droite + acceleration de la nage //
                 player.setAccelerationX(-500);
-                player.setAccelerationY(-500);
+                player.setAccelerationY(-400);
                 emitter.startFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
@@ -1169,7 +1197,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.X && axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche + bras //
                 player.setAccelerationX(-300);
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player)
@@ -1179,7 +1207,7 @@ var game = new Phaser.Game(config);
             }
             else if (axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche //
                 player.setAccelerationX(-300);
-                player.setAccelerationY(-300);
+                player.setAccelerationY(-200);
                 player.setMaxVelocity(280);
                 player.anims.play('right', true);
                 emitter.startFollow(player);
@@ -1193,7 +1221,7 @@ var game = new Phaser.Game(config);
             if (axisH <= -0.1 && axisV >= 0.3 && invincible == true){// Direction bas gauche + invulné //
                 player.anims.play('hit_right', true);
                 player.setAccelerationX(-300);
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
@@ -1211,7 +1239,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.A && axisH <= -0.1 && axisV >= 0.3){ // Direction haut droite + acceleration de la nage //
                 player.setAccelerationX(-500);
-                player.setAccelerationY(500);
+                player.setAccelerationY(400);
                 emitter.startFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
@@ -1220,7 +1248,7 @@ var game = new Phaser.Game(config);
             }
             else if (pad.X && axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche + bras //
                 player.setAccelerationX(-300);
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 emitter.startFollow(player);
                 emitter2.stopFollow(player);
@@ -1230,7 +1258,7 @@ var game = new Phaser.Game(config);
             }
             else if (axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche //
                 player.setAccelerationX(-300);
-                player.setAccelerationY(300);
+                player.setAccelerationY(200);
                 player.setMaxVelocity(280);
                 player.anims.play('right', true);
                 emitter.startFollow(player);
@@ -1254,45 +1282,50 @@ var game = new Phaser.Game(config);
             waste_monster.setAlpha(0);
         }*/
 
-        if(invincible == true){ // relance du compteur d'invulné //
+        if(invincible == true){ // relance du compteur d'invulné player //
             compteur-- ;
             if(compteur == 0){
                 compteur = 150;
                 invincible = false ;
             }
         }
-        
+
+        if(invincible_boss == true){ // relance du compteur d'invulné boss //
+            compteur_boss-- ;
+            if(compteur_boss == 0){
+                compteur_boss = 90;
+                invincible_boss = false ;
+            }
+        }
     }
     
     // ----- Fonctions ----- //
 
-    function hitEnnemi(player, grotte){ // en cas de vitesse trop élevée et de collision avec la grotte, le joueur perd une vie //
+    function hitEnnemi(player){ 
     
-    if(invincible == false){
-        invincible = true ;
-   
-        playerPdv -= 1;
-        this.cameras.main.shake(200);
-        if (playerPdv == 2){
-            reparation3.destroy(true,true);
+        if(invincible == false){
+            invincible = true ;
+    
+            playerPdv -= 1;
+            this.cameras.main.shake(200);
+            if (playerPdv == 2){
+                reparation3.destroy(true,true);
+            }
+            if (playerPdv == 1){
+                reparation2.destroy(true,true); 
+            }
+            if (playerPdv == 0){
+                reparation1.destroy(true,true);
+                player.setAlpha(0);
+                particles_power_up.emitParticleAt(player.x, player.y)
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+                text_gameOver.setAlpha(1);
+                gameOver = true;
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player);
+            }   
         }
-        if (playerPdv == 1){
-            reparation2.destroy(true,true); 
-        }
-        if (playerPdv == 0){
-            reparation1.destroy(true,true);
-            player.setAlpha(0);
-            particles_power_up.emitParticleAt(player.x, player.y)
-            this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
-            text_gameOver.setAlpha(1);
-            gameOver = true;
-            emitter.stopFollow(player);
-            emitter2.stopFollow(player);
-        }
-        
     }
-
-}
 
     function hitRocher(player, playerPdv){ // mort si collision avec rocher //
        
@@ -1316,6 +1349,22 @@ var game = new Phaser.Game(config);
             }
     }
     
+    function combatBoss (player,waste_monster) {
+        if(invincible_boss == false){
+            invincible_boss = true ;
+
+            if(player.body.speed >= 1000){
+                waste_monster_pdv -= 2;  
+            }
+            if(pad.X){
+                waste_monster_pdv -= 1;
+            }
+            if(waste_monster_pdv <= 0){
+                particles_power_up.emitParticleAt(waste_monster.x, waste_monster.y);
+                waste_monster.destroy();
+            }
+        }
+    }
 
     function restart (scene){
         if (gameOver == true){
@@ -1324,34 +1373,79 @@ var game = new Phaser.Game(config);
             ajout_power_up = false;
             text_gameOver.setAlpha(0);
             playerPdv = 3;
+            waste_monster_pdv = 3;
+            etat_ennemi_bouteille_01 = true;
+            etat_ennemi_bouteille_02 = true;
+            etat_ennemi_bouteille_03 = true;
+            etat_ennemi_bouteille_04 = true;
+            etat_ennemi_bouteille_05 = true;
+            etat_ennemi_bouteille_06 = true;
+
         }
     }
 
-    function tremblement(player,waste_monster_silhouete){
-        if (waste_monster_silhouete.x >=9000){
-            this.cameras.main.shake(50);
+    function tremblement(player,waste_monster_silhouette){
+        if (waste_monster_silhouette.x >=9000){ // tremblement lors du passage du monstre (silhouette) //
+            this.cameras.main.shake(40);
         }
     }
 
     function hitPowerUp (player, power_up){ // attraper power_up //
         if(pad.X){
             power_up.destroy(true,true);
-            particles_power_up.emitParticleAt(power_up.x, power_up.y)
+            particles_power_up.emitParticleAt(power_up.x, power_up.y);
             ajout_power_up = true;
             textTuto_04.setAlpha(1);
             }
     }
 
-    function kill (player, ennemi_bouteille){
-            if (pad.X){
-                ennemi_bouteille_01.destroy(true, true);
-            }
+    function kill_ennemi_01 (player){
+         if (pad.X && etat_ennemi_bouteille_01 == true){
+            ennemi_bouteille_01.destroy(true, true);
+            etat_ennemi_bouteille_01 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_01.x,ennemi_bouteille_01.y);   
         }
+    }
+    function kill_ennemi_02 (player){
+         if (pad.X && etat_ennemi_bouteille_02 == true){
+            ennemi_bouteille_02.destroy(true, true);
+            etat_ennemi_bouteille_02 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_02.x,ennemi_bouteille_02.y);   
+        }
+    }
+    function kill_ennemi_03 (player){
+         if (pad.X && etat_ennemi_bouteille_03 == true){
+            ennemi_bouteille_03.destroy(true, true);
+            etat_ennemi_bouteille_03 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_03.x,ennemi_bouteille_03.y);   
+        }
+    }
+    function kill_ennemi_04 (player){
+         if (pad.X && etat_ennemi_bouteille_04 == true){
+            ennemi_bouteille_04.destroy(true, true);
+            etat_ennemi_bouteille_04 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_04.x,ennemi_bouteille_04.y);   
+        }
+    }
+    function kill_ennemi_05 (player){
+         if (pad.X && etat_ennemi_bouteille_05 == true){
+            ennemi_bouteille_05.destroy(true, true);
+            etat_ennemi_bouteille_05 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_05.x,ennemi_bouteille_05.y);   
+        }
+    }
+    function kill_ennemi_06 (player){
+         if (pad.X && etat_ennemi_bouteille_06 == true){
+            ennemi_bouteille_06.destroy(true, true);
+            etat_ennemi_bouteille_06 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_06.x,ennemi_bouteille_06.y);   
+        }
+    }
 
             
-    function hitGrotte(player, grotte){ // en cas de vitesse trop élevée et de collision avec la grotte, le joueur perd une vie //
+    function hitGrotte(player, grotte){
     
-        if(invincible == false && player.body.speed >= 500){
+        if(invincible == false && player.body.speed >= 500){ // en cas de vitesse trop élevée et de collision avec la grotte, le joueur perd une vie //
             invincible = true ;
        
             playerPdv -= 1;
