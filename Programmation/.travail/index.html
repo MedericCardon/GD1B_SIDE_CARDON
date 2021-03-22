@@ -25,7 +25,7 @@ var config = {
             default: 'arcade',
             arcade: {
                 gravity: { y: 90 },//105
-                debug: true
+                debug: false
             }
         },
         scene: {
@@ -50,6 +50,18 @@ var particles_bidon;
 var emitter_bidon;
 var particles_bidon2;
 var emitter_bidon2;
+var particles_bidon3;
+var emitter_bidon3;
+var particles_bidon4;
+var emitter_bidon4;
+var particles_bidon5;
+var emitter_bidon5;
+var particles_bidon6;
+var emitter_bidon6;
+var particles_bidon7;
+var emitter_bidon7;
+var particles_bidon7;
+var emitter_bidon7;
 var ennemi_bouteille_01;
 var ennemi_bouteille_02;
 var ennemi_bouteille_03;
@@ -74,7 +86,7 @@ var playerPdv = 3;
 var invincible = false ;
 var invincible_boss = false;
 var compteur = 150;
-var compteur_boss = 90;
+var compteur_boss = 150;
 var compteur_restart = 300;
 var power_up;
 var particles_power_up;
@@ -91,6 +103,11 @@ var textTuto_02;
 var textTuto_03;
 var textTuto_04;
 var text_gameOver;
+var vie_boss_01 = true;
+var vie_boss_02 = true;
+var vie_boss_03 = true;
+var barre_de_vie;
+var bruit_sous_marin;
 
 var dialogue_01;
 var timeRestart;
@@ -125,9 +142,9 @@ var game = new Phaser.Game(config);
         this.load.image('station', 'assets/background_station.png');
         this.load.image('tuyaux','assets/Tuyaux.png');
         this.load.image('bidons','assets/bidons.png');
-        this.load.image('waste_monster_silhouette','assets/waste_monster/waste_monster-assets/waste_monstre_silhouete.png')
-
-        // ----- spriteSheet sous marin + algues ----- //
+        this.load.spritesheet('waste_monster_silhouette','assets/waste_monster/waste_monster-assets/waste_monstre_silhouete.png', { frameWidth: 612.714286, frameHeight: 391 });
+       
+        // ----- spriteSheet sous marin + algues ----- //  
 
         this.load.spritesheet('sous-marin', 'assets/spriteSheet_sous_marin.png', { frameWidth: 183.5, frameHeight: 178 });
         this.load.spritesheet('sous-marin_Hit', 'assets/spriteSheet_sous_marin_hit.png', { frameWidth: 183.5, frameHeight: 178 });
@@ -139,11 +156,13 @@ var game = new Phaser.Game(config);
         this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.214286, frameHeight: 391});
         this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 101, frameHeight: 53});
 
-        // ----- HUD + vie ----- // 
+        // ----- HUD + vie + barre de vie boss ----- // 
 
         this.load.image('reparation','assets/Cle.png');
         this.load.image('HUD','assets/HUD_sous_marin.png');
-        this.load.image('panneau_dialogue','assets/panneau_dialogue.png')
+        this.load.image('panneau_dialogue','assets/panneau_dialogue.png');
+        this.load.image('barre_vie','assets/barre_de_vie_vide.png');
+        this.load.image('vie_boss','assets/vie_boss.png');
 
         // ----- assests particules ----- //
 
@@ -180,10 +199,13 @@ var game = new Phaser.Game(config);
         this.load.image('texte_tuto_03','assets/texte_tuto/texte_tuto-assets/texte_tuto_03.png');
         this.load.image('texte_tuto_04','assets/texte_tuto/texte_tuto-assets/texte_tuto_04.png');
         this.load.image('texte_gameOver','assets/texte_tuto/texte_tuto-assets/gameOver.png');
+
     }
 
     function create ()
     {
+
+            
 
         // ----- assets première zone ----- //
 
@@ -197,30 +219,6 @@ var game = new Phaser.Game(config);
         this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
         this.add.image(3840,54, 'station').setOrigin(0).setScrollFactor(0.4);
         this.add.image(7000,600, 'plan_02').setScrollFactor(0.4);
-
-        // ----- particules "poussière" dans l'eau ----- //
-
-        particles_bidon = this.add.particles('particules_bidon');
-        var emitter_bidon = particles_bidon.createEmitter({
-            x: 2100,
-            y: 720,
-            speed: 100,
-            frequency: 150,
-            lifespan: 40000,
-            blendMode:'ADD',
-        });
-
-        particles_bidon2 = this.add.particles('particules_bidon');
-        var emitter_bidon2 = particles_bidon2.createEmitter({
-            x: 3500,
-            y: 720,
-            speed: 100,
-            frequency: 100,
-            speed: 100,
-            frequency: 150,
-            lifespan: 40000,
-            blendMode:'ADD',
-        });
 
         // ----- asset tuyaux + bidons (arriere plan) ----- //
 
@@ -337,7 +335,7 @@ var game = new Phaser.Game(config);
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(4500,500, 'sous-marin');//depart 100, 200//
+        player = this.physics.add.sprite(21000,1000, 'sous-marin').setFlipX(true);//pour modifier la zone d'apparition du sous marin. defaut: 100, 400//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -350,6 +348,8 @@ var game = new Phaser.Game(config);
         waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster').setScale(1.2,1.2);
         waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
         waste_monster.setCollideWorldBounds(true);
+        waste_monster.setSize(350,200);
+        waste_monster.setOffset(80,100);
 
         this.tweens.add({
             targets: waste_monster,
@@ -452,6 +452,101 @@ var game = new Phaser.Game(config);
             },
             yoyo: true,
             repeat: -1
+        });
+
+
+        // ----- particules "poussière" dans l'eau ----- //
+
+        particles_bidon = this.add.particles('particules_bidon');
+        var emitter_bidon = particles_bidon.createEmitter({
+            x: 2000,
+            y: 800,
+            speed: 200,
+            frequency: 100,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon2 = this.add.particles('particules_bidon');
+        var emitter_bidon2 = particles_bidon2.createEmitter({
+            x: 4000,
+            y: 800,
+            speed: 200,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon3 = this.add.particles('particules_bidon');
+        var emitter_bidon3 = particles_bidon3.createEmitter({
+            x: 6000,
+            y: 800,
+            speed: 200,
+            frequency: 100,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon4 = this.add.particles('particules_bidon');
+        var emitter_bidon4 = particles_bidon4.createEmitter({
+            x: 8000,
+            y: 800,
+            speed: 200,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon5 = this.add.particles('particules_bidon');
+        var emitter_bidon5 = particles_bidon5.createEmitter({
+            x: 10000,
+            y: 800,
+            speed: 100,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon6 = this.add.particles('particules_bidon');
+        var emitter_bidon6 = particles_bidon6.createEmitter({
+            x: 500,
+            y: 800,
+            speed: 100,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon7 = this.add.particles('particules_bidon');
+        var emitter_bidon7 = particles_bidon7.createEmitter({
+            x: 12000,
+            y: 800,
+            speed: 100,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon8 = this.add.particles('particules_bidon');
+        var emitter_bidon8 = particles_bidon8.createEmitter({
+            x: 14000,
+            y: 800,
+            speed: 100,
+            frequency: 100,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
         });
 
         // ----- Recifs premier plan première zone ----- //
@@ -614,10 +709,19 @@ var game = new Phaser.Game(config);
         this.add.image(2560,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
         this.add.image(3840,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
 
-        // ----- HUD ----- //
+        // ----- HUD + barre de vie boss ----- //
 
         this.add.image(10,10, 'HUD').setOrigin(0).setScrollFactor(0);
         this.add.image(10,540, 'panneau_dialogue').setOrigin(0).setScrollFactor(0);
+
+        
+
+        vie_boss_01 = this.add.sprite(1050,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_droite //
+        vie_boss_02 = this.add.sprite(750,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie centre //
+        vie_boss_03 = this.add.sprite(450,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie gauche //
+        barre_de_vie = this.add.image(750,50, 'barre_vie').setScrollFactor(0).setAlpha(0);
+        
+
 
         // ----- Point de vie du joueur sous forme de cle de reparation ----- //
 
@@ -625,9 +729,9 @@ var game = new Phaser.Game(config);
         reparation2 = this.physics.add.staticGroup();
         reparation3 = this.physics.add.staticGroup();
 
-        reparation1.create(125,60, 'reparation').setScrollFactor(0); 
-        reparation2.create(155,60, 'reparation').setScrollFactor(0);
-        reparation3.create(185,60, 'reparation').setScrollFactor(0);
+        reparation1.create(155,80, 'reparation').setScrollFactor(0); 
+        reparation2.create(185,80, 'reparation').setScrollFactor(0);
+        reparation3.create(215,80, 'reparation').setScrollFactor(0);
 
 
         //  ----- Caméra ----- //
@@ -670,6 +774,13 @@ var game = new Phaser.Game(config);
             key: 'waste_monster_anim',
             frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 6}),
             frameRate : 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'waste_monster_silhouette_anim',
+            frames: this.anims.generateFrameNumbers('waste_monster_silhouette', {start:0, end : 6}),
+            frameRate : 8,
             repeat: -1
         });
 
@@ -730,9 +841,6 @@ var game = new Phaser.Game(config);
         text = this.add.text(60, 590, '', { font: '12px Courier', fill: '#00ff00' });
         text.setScrollFactor(0);
 
-        
-
-        
 
         // ----- Overlap ----- //
         
@@ -756,6 +864,9 @@ var game = new Phaser.Game(config);
         this.physics.add.overlap(player, ennemi_bouteille_06, hitEnnemi, null, this);
 
         
+        this.physics.add.overlap(player,waste_monster,combatBoss,null,this);
+
+        
 
         this.physics.add.overlap(player,waste_monster_silhouette, tremblement,null,this);
         this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
@@ -766,7 +877,9 @@ var game = new Phaser.Game(config);
         this.physics.add.collider(player,grotte,hitGrotte,null,this);
         this.physics.add.collider(player,recif_block,hitGrotte,null,this);
         this.physics.add.collider(player, recif,hitGrotte,null,this);
-        this.physics.add.collider(player,waste_monster,combatBoss,null,this);
+        //this.physics.add.collider(player,waste_monster,combatBoss,null,this);
+
+        this.physics.add.collider(player,waste_monster,hitEnnemi,null,this);
         
 
         // ----- Time restart ----- //
@@ -779,16 +892,24 @@ var game = new Phaser.Game(config);
     {
 
         if(player.x >= 800){
-            //text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
-            text.setText(waste_monster_pdv);//dialogue_01
+            text.setText('Speed: ' + player.body.speed + 'X : ' + player.body.x);
+            //text.setText(waste_monster_pdv);//dialogue_01
         }
 
         if(player.x >= 10000){
             tween_monster.play();
             waste_monster_silhouette.setAlpha(1);
+            waste_monster_silhouette.anims.play('waste_monster_silhouette_anim',true);
         }
         if (player.x >= 12000){
             waste_monster_silhouette.destroy();
+        }
+
+        if(player.x >= 20500){
+            vie_boss_01.setAlpha(1);
+            vie_boss_02.setAlpha(1);
+            vie_boss_03.setAlpha(1);
+            barre_de_vie.setAlpha(1);
         }
 
         // Keyboard //
@@ -1293,7 +1414,7 @@ var game = new Phaser.Game(config);
         if(invincible_boss == true){ // relance du compteur d'invulné boss //
             compteur_boss-- ;
             if(compteur_boss == 0){
-                compteur_boss = 90;
+                compteur_boss = 150;
                 invincible_boss = false ;
             }
         }
@@ -1359,9 +1480,19 @@ var game = new Phaser.Game(config);
             if(pad.X){
                 waste_monster_pdv -= 1;
             }
+            if(waste_monster_pdv == 2){
+                vie_boss_01.destroy();
+            }
+            if(waste_monster_pdv == 1){
+                vie_boss_02.destroy();
+                vie_boss_01.destroy();
+            }
             if(waste_monster_pdv <= 0){
                 particles_power_up.emitParticleAt(waste_monster.x, waste_monster.y);
                 waste_monster.destroy();
+                barre_de_vie.destroy();
+                vie_boss_03.destroy();
+                // ajout texte victoire + arret de la physic//
             }
         }
     }
