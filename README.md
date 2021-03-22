@@ -1,2 +1,0 @@
-# GD1B_SIDE_CARDON
- 
