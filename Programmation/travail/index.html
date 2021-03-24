@@ -24,7 +24,7 @@ var config = {
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: { y: 90 },//105
+                gravity: { y: 90 },// par défaut : 90 //
                 debug: false
             }
         },
@@ -78,7 +78,7 @@ var waste_monster;
 var waste_monster_pdv = 3;
 var waste_monster_silhouette;
 var tween_monster;
-var pad;
+var gamepad;
 var reparation1 = true;
 var reparation2 = true;
 var reparation3 = true;
@@ -122,6 +122,8 @@ var KeyZ;
 var KeyQ;
 var KeyS;
 var keyD;
+var keyA;
+var spaceBar;
 
 var game = new Phaser.Game(config);
 
@@ -738,12 +740,16 @@ var game = new Phaser.Game(config);
         keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        
+        spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+
                         
-        this.input.gamepad.on('down', function (pad, button, index) {
-            return;
+        this.input.gamepad.once('down', function (pad, button, index) {
+            gamepad = pad;
         });
 
-        
         // ----- animations ----- //
 
         this.anims.create({
@@ -834,9 +840,9 @@ var game = new Phaser.Game(config);
 
         dialogue_02 = [
             "C'est quoi ça ?",
-            "Mon radar m'indique une",
-            "enorme masse en mouvement",
-            "vers toi !",
+            "J'ai une énorme masse",
+            "en mouvement vers toi",
+            "sur mon radar !",
             "",
             "Fin de la transmition..."
         ];
@@ -876,12 +882,17 @@ var game = new Phaser.Game(config);
         this.physics.add.overlap(player, rocher_03,hitRocher,null,this);
         this.physics.add.overlap(player, rocher_04,hitRocher,null,this);
 
+        
+
+
         this.physics.add.overlap(player, ennemi_bouteille_01, kill_ennemi_01, null, this);
         this.physics.add.overlap(player, ennemi_bouteille_02, kill_ennemi_02, null, this);
         this.physics.add.overlap(player, ennemi_bouteille_03, kill_ennemi_03, null, this);
         this.physics.add.overlap(player, ennemi_bouteille_04, kill_ennemi_04, null, this);
         this.physics.add.overlap(player, ennemi_bouteille_05, kill_ennemi_05, null, this);
         this.physics.add.overlap(player, ennemi_bouteille_06, kill_ennemi_06, null, this);
+
+       
 
         this.physics.add.overlap(player, ennemi_bouteille_01, hitEnnemi, null, this);
         this.physics.add.overlap(player, ennemi_bouteille_02, hitEnnemi, null, this);
@@ -917,6 +928,22 @@ var game = new Phaser.Game(config);
 
     function update ()
     {
+        if(invincible == true){ // relance du compteur d'invulné player //
+            compteur-- ;
+            if(compteur == 0){
+                compteur = 150;
+                invincible = false ;
+            }
+        }
+
+        if(invincible_boss == true){ // relance du compteur d'invulné boss //
+            compteur_boss-- ;
+            if(compteur_boss == 0){
+                compteur_boss = 150;
+                invincible_boss = false ;
+            }
+        }
+
         if(player.x >= 10){
             text.setText(dialogue_00);
         }
@@ -958,62 +985,443 @@ var game = new Phaser.Game(config);
             barre_de_vie.setAlpha(1);
         }
 
+        
         // Keyboard //
 
-        /*if (keyQ.isDown)
-        {
-            //player.setVelocityX(-150);
-            this.physics.velocityFromRotation(player.rotation, -300, player.body.acceleration);
-            emitter.startFollow(player);
-            emitter2.stopFollow(player);
-            player.setSize(180, 178);
-            player.setOffset(0,0);
-            player.anims.play('left', true);
-        }
-        else{
-            this.physics.velocityFromRotation(player.rotation,0, player.body.acceleration);
-            emitter.stopFollow(player);
-            emitter2.stopFollow(player);
-        }
-        if (keyD.isDown)
-        {
-            //player.setVelocityX(150);
-            this.physics.velocityFromRotation(player.rotation, 300, player.body.acceleration);
-            emitter.stopFollow(player);
-            emitter2.startFollow(player);
-            player.setSize(180, 178);
-            player.setOffset(0,0);
-            player.anims.play('right', true);   
-        }
-        else{
-            this.physics.velocityFromRotation(player.rotation,0, player.body.acceleration);
-            emitter.stopFollow(player);
-            emitter2.stopFollow(player);
-
-        }
-
-
-        if (keyZ.isDown)
-        {
-            player.setVelocityY(-150);
-            player.anims.play('right', true);
+        // ----- Direction droite ----- //
+        if(keyD.isDown){
+            if (keyD.isDown && invincible == true){ // Direction droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setMaxVelocity(280);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0); 
+            }
+            else if (ajout_power_up == true && keyD.isDown/*ajout key power up*/){ // direction droite + power_up //
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if ( keyD.isDown && keyA.isDown ){
+                player.setAccelerationX(500);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true); 
+            }
             
-        }
-        else if (keyS.isDown)
-        {
-            player.setVelocityY(150);
-            player.anims.play('right', true);
+            else if (spaceBar.isDown && keyD.isDown){ // direction droite + bras //
+                player.setAccelerationX(300);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(280);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);  
+            }
             
-        }*/
-    
+            else if(keyD.isDown){ // direction droite //
+                player.anims.play('left', true);
+                player.setMaxVelocity(280);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                
+                
+
+                algues.anims.play('algues_1',true);
+                algues_2.anims.play('algues_1',true);
+                algues_3.anims.play('algues_1',true);
+                algues_4.anims.play('algues_1',true);
+                algues_5.anims.play('algues_1',true);
+                algues_6.anims.play('algues_1',true);
+                algues_7.anims.play('algues_1',true);
+                waste_monster.anims.play('waste_monster_anim',true);
+            }
+        }
+            // ----- Direction gauche----- //
+        if (keyQ.isDown){
+            if(keyQ.isDown && invincible == true){ // Direction gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true  && keyQ.isDown/*ajout key power up */){ //Direction gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyA.isDown && keyQ.isDown){
+                player.setAccelerationX(-500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (spaceBar.isDown && keyQ.isDown){ // Direction gauche + bras //
+                player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if(keyQ.isDown){ // Direction gauche //
+                player.setAccelerationX(-300);
+                player.anims.play('right', true);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+
+        // ----- Direction bas ----- //
+        if(keyS.isDown){
+            if(keyA.isDown && keyS.isDown && keyD.isUp && keyQ.isUp){ // Direction bas + acceleration //
+                player.setAccelerationY(400);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+            else if(keyS.isDown && keyD.isUp && keyQ.isUp){ // Direction bas //
+                player.setAccelerationY(250);
+                player.setMaxVelocity(250);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+        
+            else if (keyS.isDown && keyD.isUp && keyQ.isUp && invincible == true){ // Direction bas + invulné //
+                if (keyD.isDown){
+                    player.anims.play('hit_left', true);
+                }
+                else if (keyQ.isDown){
+                    player.anims.play('hit_right', true);
+                }
+            }
+        }
+            // ----- Direction haut ----- //
+        if (keyZ.isDown){
+            if(keyA.isDown && keyZ.isDown && keyD.isUp && keyQ.isUp){ // Direction haut + acceleration //
+                player.setAccelerationY(-400);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+            } 
+            else if(keyZ.isDown && keyD.isUp && keyQ.isUp){ // Direction haut //
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(200);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+                else if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+            }
+            else if (keyZ.isDown && keyD.isUp && keyQ.isUp && invincible == true){ // Direction haut + invulné //
+                if (axisH <= -0.1){
+                    player.anims.play('hit_right', true);
+                }
+                else if (axisH >= 0.1){
+                    player.anims.play('hit_left', true);
+                }
+            }
+        }
+        // ----- Direction haut droite ----- //
+
+        if(keyZ.isDown && keyD.isDown){
+            
+            if (keyZ.isDown && keyD.isDown && invincible == true){ // Direction haut droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && /*ajout key power up*/ keyZ.isDown && keyD.isDown){ // Direction haut droite + power_up //
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyA.isDown && keyZ.isDown && keyD.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(-400);
+                emitter.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
+            }
+            else if (spaceBar.isDown && keyZ.isDown && keyD.isDown){ // Direction haut droite + bras //
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (keyZ.isDown && keyD.isDown){ //Direction haut droite //
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+
+            }
+        }
+
+        // ----- Direction bas droite ----- //
+        if (keyS.isDown && keyD.isDown){
+            if (keyS.isDown && keyD.isDown && invincible == true){ // Direction bas droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && /*ajout key power up */  keyS.isDown && keyD.isDown){// Direction bas droite + power_up//
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyA.isDown && keyS.isDown && keyD.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(400);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
+            }
+            else if (spaceBar.isDown && keyS.isDown && keyD.isDown){// Direction bas droite + bras //
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (keyS.isDown && keyD.isDown){// Direction bas droite //
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+            // ----- Direction haut gauche ----- //
+        if (keyZ.isDown && keyQ.isDown){
+            if (keyZ.isDown && keyQ.isDown && invincible == true){ // Direction haut gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && /*ajout key power up*/ keyZ.isDown && keyQ.isDown){ // Direction haut gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyA.isDown && keyZ.isDown && keyQ.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(-400);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (spaceBar.isDown && keyZ.isDown && keyQ.isDown){ // Direction haut gauche + bras //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player)
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (keyZ.isDown && keyQ.isDown){ // Direction haut gauche //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+
+            // ----- Direction bas gauche ----- //
+        if (keyS.isDown && keyQ.isDown){
+        
+            if (keyS.isDown && keyQ.isDown && invincible == true){// Direction bas gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && /*ajouter key power up */ keyS.isDown && keyQ.isDown){ // Direction bas gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyA.isDown && keyS.isDown && keyQ.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(400);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (spaceBar.isDown && keyS.isDown && keyQ.isDown){ // Direction bas gauche + bras //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (keyS.isDown && keyQ.isDown){ // Direction bas gauche //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+        
+        else if (keyQ.isUp && keyD.isUp && keyZ.isUp && keyS.isUp && keyA.isUp){
+            player.setAcceleration(0);
+            player.setMaxVelocity(280);
+            emitter.stopFollow(player);
+            emitter2.stopFollow(player);
+        }
+        // Gamepad //
+
+        
         if (this.input.gamepad.total === 0)
         {
             return;
         }
-
-        // Gamepad //
-
         pad = this.input.gamepad.getPad(0);
+        
         
         if (pad.axes.length)
         {
@@ -1104,7 +1512,8 @@ var game = new Phaser.Game(config);
             }
             else if (pad.A && axisH <= -0.1){
                 player.setAccelerationX(-500);
-                emitter.startFollow(player);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
@@ -1357,6 +1766,7 @@ var game = new Phaser.Game(config);
                 player.setAccelerationX(-500);
                 player.setAccelerationY(-400);
                 emitter.startFollow(player);
+                emitter2.stopFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
@@ -1408,6 +1818,7 @@ var game = new Phaser.Game(config);
                 player.setAccelerationX(-500);
                 player.setAccelerationY(400);
                 emitter.startFollow(player);
+                emitter2.stopFollow(player);
                 player.setMaxVelocity(480);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
@@ -1448,22 +1859,7 @@ var game = new Phaser.Game(config);
         if(waste_monster.x <= 22500){
             waste_monster.setAlpha(0);
         }*/
-
-        if(invincible == true){ // relance du compteur d'invulné player //
-            compteur-- ;
-            if(compteur == 0){
-                compteur = 150;
-                invincible = false ;
-            }
-        }
-
-        if(invincible_boss == true){ // relance du compteur d'invulné boss //
-            compteur_boss-- ;
-            if(compteur_boss == 0){
-                compteur_boss = 150;
-                invincible_boss = false ;
-            }
-        }
+        
     }
     
     // ----- Fonctions ----- //
@@ -1568,51 +1964,106 @@ var game = new Phaser.Game(config);
     }
 
     function hitPowerUp (player, power_up){ // attraper power_up //
-        if(pad.X){
+        if (gamepad){
+            if(pad.X){
+                power_up.destroy(true,true);
+                particles_power_up.emitParticleAt(power_up.x, power_up.y);
+                ajout_power_up = true;
+                textTuto_04.setAlpha(1);
+            }
+        }
+        else if (spaceBar.isDown){
             power_up.destroy(true,true);
             particles_power_up.emitParticleAt(power_up.x, power_up.y);
             ajout_power_up = true;
             textTuto_04.setAlpha(1);
-            }
+        }
     }
 
+
+// ----- function kill ennemi ----- //
     function kill_ennemi_01 (player){
-         if (pad.X && etat_ennemi_bouteille_01 == true){
+        if (gamepad){
+            if(pad.X && etat_ennemi_bouteille_01 == true){
+                ennemi_bouteille_01.destroy(true, true);
+                etat_ennemi_bouteille_01 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_01.x,ennemi_bouteille_01.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_01 == true){
             ennemi_bouteille_01.destroy(true, true);
             etat_ennemi_bouteille_01 = false;
             particles_power_up.emitParticleAt(ennemi_bouteille_01.x,ennemi_bouteille_01.y);   
         }
     }
+    
     function kill_ennemi_02 (player){
-         if (pad.X && etat_ennemi_bouteille_02 == true){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_02 == true){
+                ennemi_bouteille_02.destroy(true, true);
+                etat_ennemi_bouteille_02 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_02.x,ennemi_bouteille_02.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_02 == true){
             ennemi_bouteille_02.destroy(true, true);
             etat_ennemi_bouteille_02 = false;
             particles_power_up.emitParticleAt(ennemi_bouteille_02.x,ennemi_bouteille_02.y);   
         }
     }
+    
     function kill_ennemi_03 (player){
-         if (pad.X && etat_ennemi_bouteille_03 == true){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_03 == true){
+                ennemi_bouteille_03.destroy(true, true);
+                etat_ennemi_bouteille_03 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_03.x,ennemi_bouteille_03.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_03 == true){
             ennemi_bouteille_03.destroy(true, true);
             etat_ennemi_bouteille_03 = false;
             particles_power_up.emitParticleAt(ennemi_bouteille_03.x,ennemi_bouteille_03.y);   
         }
     }
+    
     function kill_ennemi_04 (player){
-         if (pad.X && etat_ennemi_bouteille_04 == true){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_04 == true){
+                ennemi_bouteille_04.destroy(true, true);
+                etat_ennemi_bouteille_04 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_04.x,ennemi_bouteille_04.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_04 == true){
             ennemi_bouteille_04.destroy(true, true);
             etat_ennemi_bouteille_04 = false;
             particles_power_up.emitParticleAt(ennemi_bouteille_04.x,ennemi_bouteille_04.y);   
         }
     }
     function kill_ennemi_05 (player){
-         if (pad.X && etat_ennemi_bouteille_05 == true){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_05 == true){
+                ennemi_bouteille_05.destroy(true, true);
+                etat_ennemi_bouteille_05 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_05.x,ennemi_bouteille_05.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_05 == true){
             ennemi_bouteille_05.destroy(true, true);
             etat_ennemi_bouteille_05 = false;
             particles_power_up.emitParticleAt(ennemi_bouteille_05.x,ennemi_bouteille_05.y);   
         }
     }
     function kill_ennemi_06 (player){
-         if (pad.X && etat_ennemi_bouteille_06 == true){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_06 == true){
+                ennemi_bouteille_06.destroy(true, true);
+                etat_ennemi_bouteille_06 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_06.x,ennemi_bouteille_06.y);   
+            }
+        }
+        else if (spaceBar.isDown&& etat_ennemi_bouteille_06 == true){
             ennemi_bouteille_06.destroy(true, true);
             etat_ennemi_bouteille_06 = false;
             particles_power_up.emitParticleAt(ennemi_bouteille_06.x,ennemi_bouteille_06.y);   
