@@ -160,7 +160,7 @@ var game = new Phaser.Game(config);
         // ----- spriteSheet ennemies ----- //
 
         this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.214286, frameHeight: 391});
-        this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 101, frameHeight: 53});
+        this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 105.333333, frameHeight: 54});
 
         // ----- HUD + vie + barre de vie boss ----- // 
 
@@ -338,7 +338,7 @@ var game = new Phaser.Game(config);
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(21000,800, 'sous-marin').setFlipX(true);//pour modifier la zone d'apparition du sous marin. defaut: 100, 400//
+        player = this.physics.add.sprite(100,400, 'sous-marin').setFlipX(true);//pour modifier la zone d'apparition du sous marin. defaut: 100, 400//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -783,8 +783,8 @@ var game = new Phaser.Game(config);
 
 
         this.anims.create({
-            key : 'ennemi_bouteille_01',
-            frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 3}),
+            key : 'ennemi_bouteille_anim',
+            frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 5}),
             frameRate : 5,
             repeat: -1
         });
@@ -836,7 +836,7 @@ var game = new Phaser.Game(config);
             "installation tu pourras",
             "aller y jeter un oeil ?",
              "",
-             "Fin de la transmition..."
+             "Fin de la transmission..."
         ];
 
         dialogue_02 = [
@@ -845,7 +845,7 @@ var game = new Phaser.Game(config);
             "en mouvement vers toi",
             "sur mon radar !",
             "",
-            "Fin de la transmition..."
+            "Fin de la transmission..."
         ];
 
         dialogue_03 = [
@@ -854,7 +854,7 @@ var game = new Phaser.Game(config);
             "de te rappeler ce qu'il",
             "c'est passé la dernier fois.",
             "",
-            "Fin de la transmition..."
+            "Fin de la transmission..."
         ];
 
         dialogue_04 = [
@@ -862,7 +862,7 @@ var game = new Phaser.Game(config);
             "se passe ? Je viens de perdre",
             "ton signal sur le radar.",
             "",
-            "Fin de la transmition..."
+            "Fin de la transmission..."
         ];
 
         dialogue_05 = [
@@ -1039,8 +1039,13 @@ var game = new Phaser.Game(config);
                 player.setOffset(0,0);
                 
                 
-
-                algues.anims.play('algues_1',true);
+                ennemi_bouteille_01.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_02.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_03.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_04.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_05.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_06.anims.play('ennemi_bouteille_anim',true);
+                algues.anims.play('algues_1',true);                    // Démarrage d'animation (et non je n'ai pas trouvé/cherché comment les faire démarrer au début de la scène) //
                 algues_2.anims.play('algues_1',true);
                 algues_3.anims.play('algues_1',true);
                 algues_4.anims.play('algues_1',true);
@@ -1491,6 +1496,12 @@ var game = new Phaser.Game(config);
                 player.setSize(180, 178);
                 player.setOffset(0,0);
 
+                ennemi_bouteille_01.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_02.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_03.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_04.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_05.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_06.anims.play('ennemi_bouteille_anim',true);
                 algues.anims.play('algues_1',true);
                 algues_2.anims.play('algues_1',true);
                 algues_3.anims.play('algues_1',true);
