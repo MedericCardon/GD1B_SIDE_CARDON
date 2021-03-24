@@ -338,7 +338,7 @@ var game = new Phaser.Game(config);
     
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(300,300, 'sous-marin').setFlipX(true);//pour modifier la zone d'apparition du sous marin. defaut: 100, 400//
+        player = this.physics.add.sprite(21000,800, 'sous-marin').setFlipX(true);//pour modifier la zone d'apparition du sous marin. defaut: 100, 400//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -1922,7 +1922,12 @@ var game = new Phaser.Game(config);
             if(player.body.speed >= 1000){
                 waste_monster_pdv -= 2;  
             }
-            if(pad.X){
+            if(gamepad){
+                if(pad.X){
+                    waste_monster_pdv -= 1;
+                }
+            }
+            else if (spaceBar.isDown){
                 waste_monster_pdv -= 1;
             }
             if(waste_monster_pdv == 2){
