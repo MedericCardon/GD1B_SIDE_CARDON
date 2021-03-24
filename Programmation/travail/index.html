@@ -160,7 +160,7 @@ var game = new Phaser.Game(config);
         // ----- spriteSheet ennemies ----- //
 
         this.load.spritesheet('waste_monster','assets/waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.214286, frameHeight: 391});
-        this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 105.333333, frameHeight: 54});
+        this.load.spritesheet('ennemi_bouteille','assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 105.363636, frameHeight: 60});
 
         // ----- HUD + vie + barre de vie boss ----- // 
 
@@ -722,7 +722,7 @@ var game = new Phaser.Game(config);
         reparation2 = this.physics.add.staticGroup();
         reparation3 = this.physics.add.staticGroup();
 
-        reparation1.create(155,80, 'reparation').setScrollFactor(0); 
+        reparation1.create(155,80, 'reparation').setScrollFactor(0);
         reparation2.create(185,80, 'reparation').setScrollFactor(0);
         reparation3.create(215,80, 'reparation').setScrollFactor(0);
 
@@ -784,8 +784,8 @@ var game = new Phaser.Game(config);
 
         this.anims.create({
             key : 'ennemi_bouteille_anim',
-            frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 5}),
-            frameRate : 5,
+            frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 10}),
+            frameRate : 8,
             repeat: -1
         });
 
