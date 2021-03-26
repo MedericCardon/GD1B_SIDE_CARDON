@@ -365,8 +365,8 @@ var game = new Phaser.Game(config);
 
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(15500,500, 'sous-marin').setFlipX(true);
-        //pour modifier la zone d'apparition du sous marin: (defaut: 100, 400)__(grotte : 15500,500)__(zone boss : 21000, 900)//
+        player = this.physics.add.sprite(100,400, 'sous-marin').setFlipX(true);
+        //pour modifier le spawn du sous marin: (defaut: 100, 400)__(grotte : 15500,500)__(zone boss : 21000, 900)//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
