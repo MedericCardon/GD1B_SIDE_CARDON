@@ -107,6 +107,7 @@ var textTuto_02;
 var textTuto_03;
 var textTuto_04;
 var text_gameOver;
+var texte_win;
 var vie_boss_01 = true;
 var vie_boss_02 = true;
 var vie_boss_03 = true;
@@ -118,6 +119,7 @@ var dialogue_03;
 var dialogue_04;
 var dialogue_05;
 var timeRestart;
+var texte_intro;
 
 // ----- variables touche clavier ----- //
 
@@ -210,6 +212,8 @@ var game = new Phaser.Game(config);
         this.load.image('texte_tuto_03','assets/texte_tuto/texte_tuto-assets/texte_tuto_03.png');
         this.load.image('texte_tuto_04','assets/texte_tuto/texte_tuto-assets/texte_tuto_04.png');
         this.load.image('texte_gameOver','assets/texte_tuto/texte_tuto-assets/gameOver.png');
+        this.load.image('texte_win','assets/texte_tuto/texte_tuto-assets/Mission_accomplie.png');
+        this.load.image('texte_intro','assets/texte_tuto/texte_tuto-assets/texte_intro.png');
 
     }
 
@@ -217,7 +221,7 @@ var game = new Phaser.Game(config);
     {
 
         // ----- assets première zone ----- //
-
+        
         this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
         this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
         this.add.image(1275,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
@@ -361,7 +365,8 @@ var game = new Phaser.Game(config);
 
         // ----- Player ----- //
 
-        player = this.physics.add.sprite(100,400, 'sous-marin').setFlipX(true);//pour modifier la zone d'apparition du sous marin. defaut: 100, 400//
+        player = this.physics.add.sprite(15500,500, 'sous-marin').setFlipX(true);
+        //pour modifier la zone d'apparition du sous marin: (defaut: 100, 400)__(grotte : 15500,500)__(zone boss : 21000, 900)//
         player.setDamping(false);
         player.setDrag(80);
         player.setMaxVelocity(280);
@@ -391,7 +396,7 @@ var game = new Phaser.Game(config);
         
         ennemi_bouteille_01 = this.physics.add.sprite(4400,300, 'ennemi_bouteille');
         ennemi_bouteille_01.setSize(70,50);
-        ennemi_bouteille_01.body.setAllowGravity(false); // gravité false pour les ennemis //
+        ennemi_bouteille_01.body.setAllowGravity(false); // pas de gravité pour les ennemis //
         ennemi_bouteille_01.setCollideWorldBounds(true);
         
         this.tweens.add({
@@ -593,7 +598,7 @@ var game = new Phaser.Game(config);
         // ----- Power_up ----- //    
 
         power_up = this.physics.add.sprite(16970,480, 'power_up');
-        power_up.body.setAllowGravity(false); // gravité false //
+        power_up.body.setAllowGravity(false); // pas de gravité pour le power-up //
         power_up.setCollideWorldBounds(true);
 
         this.tweens.add({
@@ -734,8 +739,8 @@ var game = new Phaser.Game(config);
         this.add.image(10,540, 'panneau_dialogue').setOrigin(0).setScrollFactor(0);
 
         vie_boss_01 = this.add.sprite(1050,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_droite //
-        vie_boss_02 = this.add.sprite(750,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie centre //
-        vie_boss_03 = this.add.sprite(450,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie gauche //
+        vie_boss_02 = this.add.sprite(750,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_centre //
+        vie_boss_03 = this.add.sprite(450,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_gauche //
         barre_de_vie = this.add.image(750,50, 'barre_vie').setScrollFactor(0).setAlpha(0);
         
         // ----- Point de vie du joueur sous forme de cle de reparation ----- //
@@ -858,9 +863,9 @@ var game = new Phaser.Game(config);
 
         dialogue_02 = [
             "C'est quoi ça ?",
-            "J'ai une énorme masse",
-            "en mouvement vers toi",
-            "sur mon radar !",
+            "Sur mon radar j'ai une",
+            "enorme masse en mouvement",
+            "qui s'approche de toi !",
             "",
             "Fin de la transmission..."
         ];
@@ -888,9 +893,10 @@ var game = new Phaser.Game(config);
             
         text = this.add.text(45, 590, '...', { font: '12px Courier', fill: '#00ff00' });
         text.setScrollFactor(0);
-
+        texte_intro = this.add.image(0,0,'texte_intro').setOrigin(0).setScrollFactor(0).setAlpha(1);
         text_gameOver = this.add.sprite(640,360,'texte_gameOver').setAlpha(0);
         text_gameOver.setScrollFactor(0);
+        texte_win = this.add.image(640,360,'texte_win').setAlpha(0).setScrollFactor(0);
 
 
         // ----- Overlap ----- //
@@ -934,6 +940,13 @@ var game = new Phaser.Game(config);
 
     function update ()
     {
+        // ----- texte intro clavier ----- //
+
+        if(spaceBar.isDown){
+            texte_intro.setAlpha(0);
+        }  
+
+        // ----- Compteurs ----- //
 
         if(invincible == true){ // relance du compteur d'invulné player //
             compteur-- ;
@@ -1470,7 +1483,7 @@ var game = new Phaser.Game(config);
                 emitter.stopFollow(player);
                 emitter2.startFollow(player);
                 player.setSize(180, 178);
-                player.setOffset(0,0);d
+                player.setOffset(0,0);
             }
             else if (pad.A && axisH >= 0.1){
                 player.setAccelerationX(500);
@@ -1872,7 +1885,15 @@ var game = new Phaser.Game(config);
                 emitter.stopFollow(player);
                 emitter2.stopFollow(player); 
             }
-        }    
+        } 
+
+        // ----- texte intro manette ----- //
+
+        if(gamepad){
+            if(pad.A){
+                texte_intro.setAlpha(0);
+            }
+        }
     }
     
     // ----- Fonctions ----- //
@@ -1950,7 +1971,9 @@ var game = new Phaser.Game(config);
                 waste_monster.destroy();
                 barre_de_vie.destroy();
                 vie_boss_03.destroy();
-                // ajout texte victoire + arret de la physic//
+                texte_win.setAlpha(1);
+                this.physics.pause();
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
             }
         }
     }

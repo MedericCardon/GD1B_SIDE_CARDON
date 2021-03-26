@@ -1,0 +1,1 @@
+[2021-3-26 11:34:46] layer "fond_grotte_roche.png copie": Expected end of input but "c" found.
