@@ -1,0 +1,2142 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Dive into our waste</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var config = {
+        type: Phaser.AUTO,
+        width: 1280,
+        height: 720,
+        input: {
+            gamepad: true
+        },
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 90 },// par défaut : 90 //
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+// ----- variables ----- //
+
+var player;
+var cursors;
+var recif;
+var recif_block;
+var grotte;
+var algues;
+var emitter;
+var emitter2;
+var particles;
+var particles2;
+var particles_bidon;
+var emitter_bidon;
+var particles_bidon2;
+var emitter_bidon2;
+var particles_bidon3;
+var emitter_bidon3;
+var particles_bidon4;
+var emitter_bidon4;
+var particles_bidon5;
+var emitter_bidon5;
+var particles_bidon6;
+var emitter_bidon6;
+var particles_bidon7;
+var emitter_bidon7;
+var particles_bidon7;
+var emitter_bidon7;
+var emitter_sac;
+var particles_sac;
+var emitter_masque;
+var particles_masque;
+var ennemi_bouteille_01;
+var ennemi_bouteille_02;
+var ennemi_bouteille_03;
+var ennemi_bouteille_04;
+var ennemi_bouteille_05;
+var ennemi_bouteille_06;
+var etat_ennemi_bouteille_01 = true;
+var etat_ennemi_bouteille_02 = true;
+var etat_ennemi_bouteille_03 = true;
+var etat_ennemi_bouteille_04 = true;
+var etat_ennemi_bouteille_05 = true;
+var etat_ennemi_bouteille_06 = true;
+var waste_monster;
+var waste_monster_pdv = 3;// par défaut: 3 //
+var waste_monster_silhouette;
+var tween_monster;
+var gamepad;
+var reparation1 = true;
+var reparation2 = true;
+var reparation3 = true;
+var playerPdv = 3; // par défaut: 3 //
+var invincible = false ;
+var invincible_boss = false;
+var compteur = 150; // par défaut: 150 //
+var compteur_boss = 150; // par défaut: 150 //
+var compteur_restart = 300; // par défaut: 300 //
+var power_up;
+var particles_power_up;
+var emitter_power_up;
+var ajout_power_up = false;
+var rocher_01;
+var rocher_02;
+var rocher_03;
+var rocher_04;
+var rocher_05;
+var gameOver = false;
+var textTuto_01;
+var textTuto_02;
+var textTuto_03;
+var textTuto_04;
+var text_gameOver;
+var texte_win;
+var vie_boss_01 = true;
+var vie_boss_02 = true;
+var vie_boss_03 = true;
+var barre_de_vie;
+var dialogue_00;
+var dialogue_01;
+var dialogue_02;
+var dialogue_03;
+var dialogue_04;
+var dialogue_05;
+var timeRestart;
+var texte_intro;
+
+// ----- variables touche clavier ----- //
+
+var KeyZ;
+var KeyQ;
+var KeyS;
+var keyD;
+var keyE;
+var spaceBar;
+
+
+var game = new Phaser.Game(config);
+
+    function preload ()
+    {
+        this.load.image('background', 'assets/1_decors/decors_assets/background.png');
+
+        // ----- filtre ----- //
+
+        this.load.image('light', 'assets/1_decors/decors_assets/lumiere_principale.png');
+        this.load.image('light_grotte', 'assets/1_decors/decors_assets/filtre_caverne.png');
+
+        // ----- assets première zone ----- //
+
+        this.load.image('plan_01', 'assets/1_decors/decors_assets/Recif_03.png');
+        this.load.image('recif_block', 'assets/1_decors/decors_assets/Recif_block.png');
+        this.load.image('petit_recif','assets/3_assets_grotte/Entree_grotte-assets/petit_recif.png')
+        this.load.image('plan_02', 'assets/1_decors/decors_assets/Recif_02.png');
+        this.load.image('plan_02_Flip', 'assets/1_decors/decors_assets/Recif_02_Flip.png');
+        this.load.image('plan_03', 'assets/1_decors/decors_assets/Recif_01.png');
+        this.load.image('plan_03_Flip', 'assets/1_decors/decors_assets/Recif_01_Flip.png');
+        this.load.image('station', 'assets/2_decor_station/background_station_assets/background_station.png');
+        this.load.image('tuyaux','assets/1_decors/decors_assets/Tuyaux.png');
+        this.load.spritesheet('waste_monster_silhouette','assets/7_spriteSheet_waste_monster/waste_monster-assets/waste_monstre_silhouete.png', { frameWidth: 612.714286, frameHeight: 391 });
+       
+        // ----- spriteSheet sous marin + algues ----- //  
+
+        this.load.spritesheet('sous-marin', 'assets/4_spriteSheet_sous_marin/spriteSheet_sous_marin_assets/spriteSheet_sous_marin.png', { frameWidth: 183.5, frameHeight: 178 });
+        this.load.spritesheet('sous-marin_Hit', 'assets/4_spriteSheet_sous_marin/spriteSheet_sous_marin_assets/spriteSheet_sous_marin_hit.png', { frameWidth: 183.5, frameHeight: 178 });
+        this.load.spritesheet('sous-marin_bras', 'assets/5_spriteSheet_bras_sous_marin/spriteSheet_bras/spriteSheet_bras.png', { frameWidth: 367.388889, frameHeight: 178 });
+        this.load.spritesheet('algues','assets/1_decors/decors_assets/sprite_algue.png', {frameWidth: 2553.25, frameHeight: 295 });
+
+        // ----- spriteSheet ennemies ----- //
+
+        this.load.spritesheet('waste_monster','assets/7_spriteSheet_waste_monster/waste_monster-assets/spriteSheet_waste_monster.png',{frameWidth: 613.214286, frameHeight: 391});
+        this.load.spritesheet('ennemi_bouteille','assets/6_spriteSheet_ennemi_bouteille/ennemi_bouteille_assets/SpriteSheet_ennemi_bouteille.png', {frameWidth: 105.363636, frameHeight: 60});
+
+        // ----- HUD + vie + barre de vie boss ----- // 
+
+        this.load.image('reparation','assets/8_HUD/HUD_assets/Cle.png');
+        this.load.image('HUD','assets/8_HUD/HUD_assets/HUD_sous_marin.png');
+        this.load.image('panneau_dialogue','assets/8_HUD/HUD_assets/panneau_dialogue.png');
+        this.load.image('barre_vie','assets/8_HUD/HUD_assets/barre_de_vie_vide.png');
+        this.load.image('vie_boss','assets/8_HUD/HUD_assets/vie_boss.png');
+
+        // ----- assests particules ----- //
+
+        this.load.image('particule_bulle','assets/9_particules/particule_bulle.png');
+        this.load.image('particules2', 'assets/9_particules/particule_bulle.png');
+        this.load.image('particules_bidon', 'assets/9_particules/particules_bidon.png');
+        this.load.image('particules_sac', 'assets/7_spriteSheet_waste_monster/waste_monster-assets/dechet_sac_particule.png');
+        this.load.image('particules_masque', 'assets/7_spriteSheet_waste_monster/waste_monster-assets/dechet_masque_particules.png');
+
+        // ----- power_up ----- //
+
+        this.load.image('power_up','assets/3_assets_grotte/Entree_grotte-assets/power_up.png');
+
+        // ----- assets grotte ----- //
+
+        this.load.image('haut_grotte','assets/3_assets_grotte/Entree_grotte-assets/haut_grotte.png');
+        this.load.image('haut_grotte_flip','assets/3_assets_grotte/Entree_grotte-assets/haut_grotte_flip.png');
+        this.load.image('bas_grotte_01','assets/3_assets_grotte/Entree_grotte-assets/bas_grotte_01.png');
+        this.load.image('bas_grotte_02','assets/3_assets_grotte/Entree_grotte-assets/bas_grotte_02.png');
+        this.load.image('bas_grotte_boss','assets/3_assets_grotte/Entree_grotte-assets/bas_grotte_boss.png');
+        this.load.image('entree_grotte','assets/3_assets_grotte/Entree_grotte-assets/entree_grotte.png');
+        this.load.image('fond_grotte','assets/3_assets_grotte/Entree_grotte-assets/fond_grotte_roche.png');
+        this.load.image('block_central','assets/3_assets_grotte/Entree_grotte-assets/block_central_grotte.png');
+        this.load.image('block_central_02','assets/3_assets_grotte/Entree_grotte-assets/block_central_grotte_02.png');
+        this.load.image('pilier_01','assets/3_assets_grotte/Entree_grotte-assets/pilier_grotte_01.png');
+        this.load.image('pilier_02','assets/3_assets_grotte/Entree_grotte-assets/pilier_grotte_02.png');
+        this.load.image('pilier_03','assets/3_assets_grotte/Entree_grotte-assets/pilier_grotte_03.png');
+        this.load.image('block_passage','assets/3_assets_grotte/Entree_grotte-assets/block_grotte_passage_01.png');
+        this.load.image('rocher_01','assets/3_assets_grotte/Entree_grotte-assets/rocher_01.png');
+        this.load.image('rocher_02','assets/3_assets_grotte/Entree_grotte-assets/rocher_02.png');
+
+        // ----- texte ----- //
+
+        this.load.image('texte_tuto_01','assets/10_texte_tuto/texte_tuto-assets/texte_tuto_01.png');
+        this.load.image('texte_tuto_02','assets/10_texte_tuto/texte_tuto-assets/texte_tuto_02.png');
+        this.load.image('texte_tuto_03','assets/10_texte_tuto/texte_tuto-assets/texte_tuto_03.png');
+        this.load.image('texte_tuto_04','assets/10_texte_tuto/texte_tuto-assets/texte_tuto_04.png');
+        this.load.image('texte_gameOver','assets/10_texte_tuto/texte_tuto-assets/gameOver.png');
+        this.load.image('texte_win','assets/10_texte_tuto/texte_tuto-assets/Mission_accomplie.png');
+        this.load.image('texte_intro','assets/10_texte_tuto/texte_tuto-assets/texte_intro.png'); 
+
+    }
+
+    function create ()
+    {
+
+        // ----- assets première zone ----- //
+        
+        this.add.image(0,0,'background').setOrigin(0).setScrollFactor(0);
+        this.add.image(0,125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(1275,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(2542, 125, 'plan_03').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(3817,125, 'plan_03_Flip').setOrigin(0).setScrollFactor(0.25);
+        this.add.image(0,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(1280,220, 'plan_02_Flip').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(2560,220, 'plan_02').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(3840,54, 'station').setOrigin(0).setScrollFactor(0.4);
+        this.add.image(7000,600, 'plan_02').setScrollFactor(0.4);
+
+        // ----- asset tuyaux + bidons (arriere plan) ----- //
+
+        this.add.image( 6000,0, 'tuyaux').setOrigin(0).setScrollFactor(0.4);
+
+        // ----- Arriere plan grotte ----- //
+        
+        this.add.image( 22200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 22200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 21200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 21200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 20200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 20200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 19200,660, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 19200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 18200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 18200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 17200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 17200,650, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 17200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 16200,1520, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 16200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 16200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 15200,1500, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 15200,620, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image( 15200,0, 'fond_grotte').setOrigin(0).setScrollFactor(1);
+        
+        // ----- Particules bulle (sous marin) + particules mort + particules power_up ----- //
+
+        particles = this.add.particles('particule_bulle');
+        emitter = particles.createEmitter({
+            x:80,
+            y:10,
+            speed: 50,
+            scale: { start: 0.2, end: 0.5 },
+            blendMode: 'ADD',
+        });
+
+
+        particles2 = this.add.particles('particules2');
+        emitter2 = particles2.createEmitter({
+            x:-80,
+            y:10,
+            speed: 50,
+            scale: { start: 0.2, end: 0.5 },
+            blendMode: 'ADD',
+        });
+
+        particles_power_up = this.add.particles('particules_bidon');
+        emitter_power_up = particles_power_up.createEmitter({
+            angle: { start: 0, end: 360, steps: 32 },
+            lifespan: 600,
+            speed: 400,
+            quantity: 32,
+            scale: { start: 8, end: 0 },
+            blendMode: 'ADD',
+            on: false
+        });
+
+        particles_sac = this.add.particles('particules_sac');
+        emitter_sac = particles_sac.createEmitter({
+            angle: { start: 45, end: 405, steps: 12 },
+            lifespan: 3000,
+            speed: 750,
+            quantity: 12,
+            scale: { start: 2, end: 0 },
+            blendMode: 'ADD',
+            on: false
+        });
+
+        particles_masque = this.add.particles('particules_masque');
+        emitter_masque = particles_masque.createEmitter({
+            angle: { start: 0, end: 360, steps: 8 },
+            lifespan: 2000,
+            speed: 600,
+            quantity: 8,
+            scale: { start: 2, end: 0 },
+            blendMode: 'ADD',
+            on: false
+        });
+
+        // ----- Texte Tuto + game over----- //
+
+        textTuto_01 = this.physics.add.sprite(500, 400, 'texte_tuto_01');
+        textTuto_01.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_01,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        textTuto_02 = this.physics.add.sprite(1250, 200, 'texte_tuto_02');
+        textTuto_02.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_02,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        textTuto_03 = this.physics.add.sprite(2000, 400, 'texte_tuto_03');
+        textTuto_03.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_03,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        textTuto_04 = this.physics.add.sprite(16950, 250, 'texte_tuto_04').setAlpha(0);
+        textTuto_04.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets : textTuto_04,
+            y:300,
+            duration: 5000,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        // ----- Player ----- //
+
+        player = this.physics.add.sprite(101,400, 'sous-marin').setFlipX(true);
+        //pour modifier le spawn du sous marin: (defaut: 100, 400)__(grotte : 15500,500)__(zone boss : 21000, 900)//
+        player.setDamping(false);
+        player.setDrag(80);
+        player.setMaxVelocity(280);
+        player.setSize(180, 178);
+        player.setOffset(0,0);
+        player.setCollideWorldBounds(true);
+
+        // ----- Waste monster (boss) ----- //
+
+        waste_monster = this.physics.add.sprite(22400, 1000, 'waste_monster').setScale(1.2,1.2);
+        waste_monster.body.setAllowGravity(false); // desactivation de la gravité pour les ennemis //
+        waste_monster.setCollideWorldBounds(true);
+        waste_monster.setSize(350,200);
+        waste_monster.setOffset(80,100);
+
+        this.tweens.add({
+            targets: waste_monster,
+            props: {
+                x: { value: 21700, duration: 2000, flipX: true },
+                y: { value: 800, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        // ----- Ennemi "bouteille" ----- //
+        
+        ennemi_bouteille_01 = this.physics.add.sprite(4400,300, 'ennemi_bouteille');
+        ennemi_bouteille_01.setSize(70,50);
+        ennemi_bouteille_01.body.setAllowGravity(false); // pas de gravité pour les ennemis //
+        ennemi_bouteille_01.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_01,
+            props: {
+                x: { value: 4200, duration: 3000, flipX: true },
+                y: { value: 600, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_02 = this.physics.add.sprite(7800,300, 'ennemi_bouteille');
+        ennemi_bouteille_02.setSize(70,50);
+        ennemi_bouteille_02.body.setAllowGravity(false); 
+        ennemi_bouteille_02.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_02,
+            props: {
+                x: { value: 7500, duration: 2500, flipX: true },
+                y: { value: 600, duration: 5000,  },
+            },
+            yoyo: true,
+            repeat: -1
+        });
+        
+        ennemi_bouteille_03 = this.physics.add.sprite(8000,550, 'ennemi_bouteille');
+        ennemi_bouteille_03.setSize(70,50);
+        ennemi_bouteille_03.body.setAllowGravity(false); 
+        ennemi_bouteille_03.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_03,
+            props: {
+                x: { value: 7200, duration: 3000, flipX: true },
+                y: { value: 200, duration: 5000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_04 = this.physics.add.sprite(13500,800, 'ennemi_bouteille');
+        ennemi_bouteille_04.setSize(70,50);
+        ennemi_bouteille_04.body.setAllowGravity(false); 
+        ennemi_bouteille_04.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_04,
+            props: {
+                x: { value: 13400, duration: 1000, flipX: true },
+                y: { value: 300, duration: 2000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_05 = this.physics.add.sprite(15800,1000, 'ennemi_bouteille').setFlipX(true);
+        ennemi_bouteille_05.setSize(70,50);
+        ennemi_bouteille_05.body.setAllowGravity(false); 
+        ennemi_bouteille_05.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_05,
+            props: {
+                x: { value: 16100, duration: 2000, flipX: true },
+                y: { value: 300, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        ennemi_bouteille_06 = this.physics.add.sprite(18100,1200, 'ennemi_bouteille').setFlipX(true);
+        ennemi_bouteille_06.setSize(70,50);
+        ennemi_bouteille_06.body.setAllowGravity(false); 
+        ennemi_bouteille_06.setCollideWorldBounds(true);
+        
+        this.tweens.add({
+            targets: ennemi_bouteille_06,
+            props: {
+                x: { value: 18500, duration: 2000, flipX: true },
+                y: { value: 900, duration: 3000},
+            },
+            yoyo: true,
+            repeat: -1
+        });
+
+        // ----- particules "poussière" dans l'eau ----- //
+
+        particles_bidon = this.add.particles('particules_bidon');
+        var emitter_bidon = particles_bidon.createEmitter({
+            x: 2000,
+            y: 800,
+            speed: 50,
+            frequency: 100,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon2 = this.add.particles('particules_bidon');
+        var emitter_bidon2 = particles_bidon2.createEmitter({
+            x: 4000,
+            y: 800,
+            frequency: 100,
+            speed: 50,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon3 = this.add.particles('particules_bidon');
+        var emitter_bidon3 = particles_bidon3.createEmitter({
+            x: 6000,
+            y: 800,
+            speed: 50,
+            frequency: 100,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon4 = this.add.particles('particules_bidon');
+        var emitter_bidon4 = particles_bidon4.createEmitter({
+            x: 8000,
+            y: 800,
+            frequency: 50,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon5 = this.add.particles('particules_bidon');
+        var emitter_bidon5 = particles_bidon5.createEmitter({
+            x: 10000,
+            y: 800,
+            frequency: 100,
+            speed: 50,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon6 = this.add.particles('particules_bidon');
+        var emitter_bidon6 = particles_bidon6.createEmitter({
+            x: 500,
+            y: 800,
+            frequency: 50,
+            speed: 100,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon7 = this.add.particles('particules_bidon');
+        var emitter_bidon7 = particles_bidon7.createEmitter({
+            x: 12000,
+            y: 800,
+            frequency: 100,
+            speed: 50,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        particles_bidon8 = this.add.particles('particules_bidon');
+        var emitter_bidon8 = particles_bidon8.createEmitter({
+            x: 14000,
+            y: 800,
+            frequency: 100,
+            speed: 50,
+            frequency: 150,
+            lifespan: 40000,
+            blendMode:'ADD',
+        });
+
+        // ----- Recifs premier plan première zone ----- //
+
+        recif = this.physics.add.staticGroup();
+        
+        recif.create(0,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+        recif.create(5115,560, 'plan_01').setOrigin(0).setScrollFactor(1).setOffset(0,210);
+        recif.create(10230,560, 'plan_01').setOrigin(0).setScrollFactor(1).setSize(7700,300).setOffset(0,210); 
+
+        // ----- Algues en mouvement première zone ----- //
+
+        algues = this.add.sprite(1280,610, 'algues');
+        algues_2 = this.add.sprite(3790,610, 'algues');
+        algues_3 = this.add.sprite(6350,610, 'algues');
+        algues_4 = this.add.sprite(8910, 610, 'algues');
+        algues_5 = this.add.sprite(11470, 610, 'algues');
+        algues_6 = this.add.sprite(12730,610, 'algues');
+        algues_7 = this.add.sprite(13880,610, 'algues');
+
+        // ----- Entree grotte et pilier_01 (Le sous marin passe à travers) ----- //
+
+        this.add.image(15100,50,'entree_grotte').setOrigin(0).setScrollFactor(1);
+        this.add.image(16355,60,'pilier_01').setOrigin(0).setScrollFactor(1);
+
+        // ----- Power_up ----- //    
+
+        power_up = this.physics.add.sprite(16970,480, 'power_up');
+        power_up.body.setAllowGravity(false); // pas de gravité pour le power-up //
+        power_up.setCollideWorldBounds(true);
+
+        this.tweens.add({
+            targets : power_up,
+            y:300,
+            duration: 1500,
+            yoyo: true,
+            delay: 100,
+            repeat: -1
+        });
+
+        // ----- Rocher grotte ----- //
+
+        rocher_01 = this.physics.add.sprite(16970,600, 'rocher_01');
+        
+        this.tweens.add({
+            targets : rocher_01,
+            y: 1700,
+            duration: 1000,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        rocher_02 = this.physics.add.sprite(16760,630, 'rocher_02');
+        
+        this.tweens.add({
+            targets : rocher_02,
+            y: 1700,
+            duration: 1000,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        rocher_03 = this.physics.add.sprite(16600,610, 'rocher_01');
+        
+        this.tweens.add({
+            targets : rocher_03,
+            y: 1700,
+            duration: 1500,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        rocher_04 = this.physics.add.sprite(17200,650, 'rocher_02');
+        
+        this.tweens.add({
+            targets : rocher_04,
+            y: 1700,
+            duration: 1500,
+            completeDelay: 100,
+            repeat: -1
+        });
+
+        // ----- block de collison pour fermer la map ----- // 
+
+        recif_block = this.physics.add.staticGroup();
+
+        recif_block.create(1280,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(2560,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(3840,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(5120,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(6400,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(7680,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(8960,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(10240,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(11520,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(12800,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+        recif_block.create(14080,1440, 'recif_block').setOrigin(1).setScrollFactor(1);
+
+        // ----- block de collision pour la gotte ----- // 
+
+        recif_block.create(15360,1440, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(2000,600).setOffset(0,-5);
+        recif_block.create(16640,1800, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(160,215).setOffset(1962,-825)
+        recif_block.create(17920,1800, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(200,130).setOffset(860,-855)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,530).setOffset(290,-1700)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(360,-1470)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(460,-1180)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(1680,20).setOffset(460,-680)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,800).setOffset(2120,-1460)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,500).setOffset(2200,-1460)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(3000,20).setOffset(2200,-1410)
+        recif_block.create(19200,2100, 'recif_block').setOrigin(1).setScrollFactor(1).setSize(20,1030).setOffset(4480,-1410)
+
+        // ----- block de collison pour fermer la map ----- //
+
+        recif_block.create(20480,2100, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(21760,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(23040,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,2110, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,1500, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,900, 'recif_block').setOrigin(1).setScrollFactor(1)
+        recif_block.create(24320,600, 'recif_block').setOrigin(1).setScrollFactor(1)
+
+        // ----- assets grotte et collisions ----- //
+
+        grotte = this.physics.add.staticGroup();
+        
+        grotte.create(17310,87,'pilier_03').setOrigin(0).setScrollFactor(1).setSize(90,500).setOffset(210,300);
+        grotte.create(15500,0,'haut_grotte').setOrigin(0).setScrollFactor(1).setSize(1000,1).setOffset(600,200);
+        grotte.create(17780,370,'block_central_02').setOrigin(0).setScrollFactor(1).setSize(10,530).setOffset(780,730);
+        grotte.create(16627,0,'haut_grotte_flip').setOrigin(0).setScrollFactor(1).setSize(3000,8).setOffset(1450,698);  
+        grotte.create(16210,500,'block_central').setOrigin(0).setScrollFactor(1).setSize(1100,30).setOffset(786,370);
+        grotte.create(15351,678,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,220);
+        grotte.create(17911,970,'bas_grotte_01').setOrigin(0).setScrollFactor(1).setSize(60,600).setOffset(700,75); 
+        grotte.create(19180,975,'bas_grotte_boss').setOrigin(0).setScrollFactor(1).setSize(6000,100).setOffset(770,600);
+        grotte.create(16631,895,'bas_grotte_02').setOrigin(0).setScrollFactor(1).setSize(1280,100).setOffset(700,283);   
+        grotte.create(19780,0,'block_passage').setOrigin(0).setScrollFactor(1).setSize(30,350).setOffset(700,215);
+
+        // ----- silhouette monstre ----- //
+
+        waste_monster_silhouette = this.physics.add.sprite(7000,400,'waste_monster_silhouette').setScale(1.5,1.5).setAlpha(0);
+        waste_monster_silhouette.body.setAllowGravity(false);
+
+        tween_monster = this.tweens.add({
+            targets: waste_monster_silhouette,
+            x: 15000,
+            duration: 7000,
+            paused: true,
+            repeat: 0 
+        });
+        
+        // ----- Filtres de lumières avec rayon ('light') hors de la grotte ----- // 
+        
+        this.add.image(0,0, 'light').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(1280,0, 'light').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(2560,0, 'light').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(5120,0, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(5120,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(3840,0, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(0,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(1280,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(2560,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+        this.add.image(3840,720, 'light_grotte').setOrigin(0).setScrollFactor(0.23);
+
+        // ----- HUD + barre de vie boss ----- //
+
+        this.add.image(10,10, 'HUD').setOrigin(0).setScrollFactor(0);
+        this.add.image(10,540, 'panneau_dialogue').setOrigin(0).setScrollFactor(0);
+
+        vie_boss_01 = this.add.sprite(1050,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_droite //
+        vie_boss_02 = this.add.sprite(750,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_centre //
+        vie_boss_03 = this.add.sprite(450,50, 'vie_boss').setScrollFactor(0).setAlpha(0); // vie_gauche //
+        barre_de_vie = this.add.image(750,50, 'barre_vie').setScrollFactor(0).setAlpha(0);
+        
+        // ----- Point de vie du joueur sous forme de cle de reparation ----- //
+
+        reparation1 = this.physics.add.staticGroup();
+        reparation2 = this.physics.add.staticGroup();
+        reparation3 = this.physics.add.staticGroup();
+
+        reparation1.create(155,80, 'reparation').setScrollFactor(0);
+        reparation2.create(185,80, 'reparation').setScrollFactor(0);
+        reparation3.create(215,80, 'reparation').setScrollFactor(0);
+
+        //  ----- Caméra ----- //
+
+        this.cameras.main.setBounds(0, 0, 1280 * 20, 1440);
+        this.physics.world.setBounds(0, 0, 1280 * 20, 1440);
+        this.cameras.main.startFollow(player, true, 0.05, 0.05);
+        this.cameras.main.fadeIn(2000);
+
+        // ----- Controles ( pad & clavier) ----- //
+
+        cursors = this.input.keyboard.createCursorKeys();
+        keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.input.gamepad.once('down', function (pad, button, index) {
+            gamepad = pad;
+        });
+
+        // ----- animations ----- //
+
+        this.anims.create({
+            key: 'hit_left',
+            frames: this.anims.generateFrameNumbers('sous-marin_Hit', {start:0, end : 9}),
+            frameRate : 15,
+            repeat: 2
+        });
+
+        this.anims.create({
+            key: 'hit_right',
+            frames: this.anims.generateFrameNumbers('sous-marin_Hit', {start:10, end : 19}),
+            frameRate : 15,
+            repeat: 2
+        });
+
+        this.anims.create({
+            key: 'waste_monster_anim',
+            frames: this.anims.generateFrameNumbers('waste_monster', {start:0, end : 6}),
+            frameRate : 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'waste_monster_silhouette_anim',
+            frames: this.anims.generateFrameNumbers('waste_monster_silhouette', {start:0, end : 6}),
+            frameRate : 8,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key : 'ennemi_bouteille_anim',
+            frames: this.anims.generateFrameNumbers('ennemi_bouteille', {start:0, end : 10}),
+            frameRate : 8,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key : 'algues_1',
+            frames: this.anims.generateFrameNumbers('algues', {start:0, end : 3}),
+            frameRate : 0.8,
+            repeat: -1
+        });
+        
+        this.anims.create({
+                key: 'left',
+                frames: this.anims.generateFrameNumbers('sous-marin', { start: 0, end: 4}),
+                frameRate: 25,
+                repeat: 1
+            });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('sous-marin', { start: 5, end: 9 }),
+            frameRate: 25,
+            repeat: 1
+        });
+
+        this.anims.create({
+            key: 'bras_right',
+            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 0, end: 8 }),
+            frameRate: 25,
+            repeat: 0
+        });
+
+        this.anims.create({
+            key: 'bras_left',
+            frames: this.anims.generateFrameNumbers('sous-marin_bras', { start: 9, end: 17 }),
+            frameRate: 25,
+            repeat: 0
+        });
+
+        // ----- Texte ----- //
+
+        dialogue_00 = [
+            "Aucun signal..."
+        ];
+
+        dialogue_01 = [
+            "Salut Sheman, on a encore",
+            "perdu le signal d'une de nos",
+            "installation tu pourras",
+            "aller y jeter un oeil ?",
+             "",
+             "Fin de la transmission..."
+        ];
+
+        dialogue_02 = [
+            "C'est quoi ça ?",
+            "Sur mon radar j'ai une",
+            "enorme masse en mouvement",
+            "qui s'approche de toi !",
+            "",
+            "Fin de la transmission..."
+        ];
+
+        dialogue_03 = [
+            "Fait attention dans cette",
+            "grotte, je n'ai pas besoin",
+            "de te rappeler ce qu'il",
+            "c'est passé la dernier fois.",
+            "",
+            "Fin de la transmission..."
+        ];
+
+        dialogue_04 = [
+            "Sherman ! qu'est ce qu'il",
+            "se passe ? Je viens de perdre",
+            "ton signal sur le radar.",
+            "",
+            "Fin de la transmission..."
+        ];
+
+        dialogue_05 = [
+            "Réception..."
+        ];
+            
+        text = this.add.text(45, 590, '...', { font: '12px Courier', fill: '#00ff00' });
+        text.setScrollFactor(0);
+        texte_intro = this.add.image(0,0,'texte_intro').setOrigin(0).setScrollFactor(0).setAlpha(1);
+        text_gameOver = this.add.sprite(640,360,'texte_gameOver').setAlpha(0);
+        text_gameOver.setScrollFactor(0);
+        texte_win = this.add.image(640,360,'texte_win').setAlpha(0).setScrollFactor(0);
+
+
+        // ----- Overlap ----- //
+        
+        this.physics.add.overlap(player, rocher_01,hitRocher,null,this);
+        this.physics.add.overlap(player, rocher_02,hitRocher,null,this);
+        this.physics.add.overlap(player, rocher_03,hitRocher,null,this);
+        this.physics.add.overlap(player, rocher_04,hitRocher,null,this);
+
+        this.physics.add.overlap(player, ennemi_bouteille_01, kill_ennemi_01, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_02, kill_ennemi_02, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_03, kill_ennemi_03, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_04, kill_ennemi_04, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_05, kill_ennemi_05, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_06, kill_ennemi_06, null, this);
+
+        this.physics.add.overlap(player, ennemi_bouteille_01, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_02, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_03, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_04, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_05, hitEnnemi, null, this);
+        this.physics.add.overlap(player, ennemi_bouteille_06, hitEnnemi, null, this);
+
+        this.physics.add.overlap(player,waste_monster,combatBoss,null,this);
+
+        this.physics.add.overlap(player,waste_monster_silhouette, tremblement,null,this);
+        this.physics.add.overlap(player, power_up, hitPowerUp,null,this);
+        
+        // ----- Collider ----- //
+
+        this.physics.add.collider(player,grotte,hitGrotte,null,this);
+        this.physics.add.collider(player,recif_block,hitGrotte,null,this);
+        this.physics.add.collider(player, recif,hitGrotte,null,this);
+        this.physics.add.collider(player,waste_monster,hitEnnemi,null,this);
+        
+        // ----- Time restart ----- //
+
+        timeRestart = this.time.addEvent({ delay: 7880, callback: restart, callbackScope: this, repeat: -1, startAt: 5000});
+
+    }
+
+    function update ()
+    {
+        // ----- texte intro clavier ----- //
+
+        if(spaceBar.isDown){
+            texte_intro.setAlpha(0);
+        }  
+
+        // ----- Compteurs ----- //
+
+        if(invincible == true){ // relance du compteur d'invulné player //
+            compteur-- ;
+            if(compteur == 0){
+                compteur = 150;
+                invincible = false ;
+            }
+        }
+
+        if(invincible_boss == true){ // relance du compteur d'invulné boss //
+            compteur_boss-- ;
+            if(compteur_boss == 0){
+                compteur_boss = 150;
+                invincible_boss = false ;
+            }
+        }
+
+        // ----- Apparition dialogue ----- //
+
+        if(player.x >= 10){
+            text.setText(dialogue_00);
+        }
+        if(player.x >= 4500){
+            text.setText(dialogue_05);
+        }
+        if(player.x >= 5000){
+            text.setText(dialogue_01);//dialogue_01
+        }
+        if(player.x >= 9500){
+            text.setText(dialogue_05);
+        }
+        if(player.x >= 10000){
+            tween_monster.play();
+            waste_monster_silhouette.setAlpha(1);
+            waste_monster_silhouette.anims.play('waste_monster_silhouette_anim',true);
+            text.setText(dialogue_02);
+        }
+        if(player.x >= 15000){
+            text.setText(dialogue_05);
+        }
+        if (player.x >= 15500){
+            text.setText(dialogue_03);
+        }
+        if (player.x >= 14000){
+            waste_monster_silhouette.destroy();
+        }
+        if(player.x >= 19000){
+            text.setText(dialogue_05);
+        }
+        if(player.x >= 19500){
+            text.setText(dialogue_04);
+        }
+
+        // ----- Apparition barre de vie boss ----- //
+
+        if(player.x >= 20500){
+            vie_boss_01.setAlpha(1);
+            vie_boss_02.setAlpha(1);
+            vie_boss_03.setAlpha(1);
+            barre_de_vie.setAlpha(1);
+        }
+
+        
+        // ----- CONTROLE CLAVIER ----- //
+        
+        // ----- Direction droite ----- //
+        if(keyD.isDown){
+            if (keyD.isDown && invincible == true){ // Direction droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setMaxVelocity(280);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0); 
+            }
+            else if (ajout_power_up == true && keyD.isDown && cursors.right.isDown){ // direction droite + power_up //
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if ( keyD.isDown && keyE.isDown ){
+                player.setAccelerationX(500);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true); 
+            }
+            
+            else if (spaceBar.isDown && keyD.isDown){ // direction droite + bras //
+                player.setAccelerationX(300);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(280);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);  
+            }
+            
+            else if(keyD.isDown){ // direction droite //
+                player.anims.play('left', true);
+                player.setMaxVelocity(280);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                
+                ennemi_bouteille_01.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_02.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_03.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_04.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_05.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_06.anims.play('ennemi_bouteille_anim',true);
+                algues.anims.play('algues_1',true);                    // Démarrage d'animation (et non je n'ai pas trouvé/cherché comment les faire démarrer au début de la scène) //
+                algues_2.anims.play('algues_1',true);
+                algues_3.anims.play('algues_1',true);
+                algues_4.anims.play('algues_1',true);
+                algues_5.anims.play('algues_1',true);
+                algues_6.anims.play('algues_1',true);
+                algues_7.anims.play('algues_1',true);
+                waste_monster.anims.play('waste_monster_anim',true);
+            }
+        }
+            // ----- Direction gauche----- //
+
+        if (keyQ.isDown){
+            if(keyQ.isDown && invincible == true){ // Direction gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true  && keyQ.isDown && cursors.left.isDown){ //Direction gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyE.isDown && keyQ.isDown){
+                player.setAccelerationX(-500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (spaceBar.isDown && keyQ.isDown){ // Direction gauche + bras //
+                player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if(keyQ.isDown){ // Direction gauche //
+                player.setAccelerationX(-300);
+                player.anims.play('right', true);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+
+        // ----- Direction bas ----- //
+
+        if(keyS.isDown){
+            if(keyE.isDown && keyS.isDown && keyD.isUp && keyQ.isUp){ // Direction bas + acceleration //
+                player.setAccelerationY(400);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+            else if(keyS.isDown && keyD.isUp && keyQ.isUp){ // Direction bas //
+                player.setAccelerationY(250);
+                player.setMaxVelocity(250);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+        
+            else if (keyS.isDown && keyD.isUp && keyQ.isUp && invincible == true){ // Direction bas + invulné //
+                if (keyD.isDown){
+                    player.anims.play('hit_left', true);
+                }
+                else if (keyQ.isDown){
+                    player.anims.play('hit_right', true);
+                }
+            }
+        }
+            // ----- Direction haut ----- //
+
+        if (keyZ.isDown){
+            if(keyE.isDown && keyZ.isDown && keyD.isUp && keyQ.isUp){ // Direction haut + acceleration //
+                player.setAccelerationY(-400);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+            } 
+            else if(keyZ.isDown && keyD.isUp && keyQ.isUp){ // Direction haut //
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(200);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+                else if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+            }
+            else if (keyZ.isDown && keyD.isUp && keyQ.isUp && invincible == true){ // Direction haut + invulné //
+                if (axisH <= -0.1){
+                    player.anims.play('hit_right', true);
+                }
+                else if (axisH >= 0.1){
+                    player.anims.play('hit_left', true);
+                }
+            }
+        }
+
+        // ----- Direction haut droite ----- //
+
+        if(keyZ.isDown && keyD.isDown){
+            
+            if (keyZ.isDown && keyD.isDown && invincible == true){ // Direction haut droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && cursors.right.isDown && keyZ.isDown && keyD.isDown){ // Direction haut droite + power_up //
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyE.isDown && keyZ.isDown && keyD.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(-400);
+                emitter.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
+            }
+            else if (spaceBar.isDown && keyZ.isDown && keyD.isDown){ // Direction haut droite + bras //
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (keyZ.isDown && keyD.isDown){ //Direction haut droite //
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+
+            }
+        }
+
+        // ----- Direction bas droite ----- //
+
+        if (keyS.isDown && keyD.isDown){
+            if (keyS.isDown && keyD.isDown && invincible == true){ // Direction bas droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true  && cursors.right.isDown &&  keyS.isDown && keyD.isDown){// Direction bas droite + power_up//
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyE.isDown && keyS.isDown && keyD.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(400);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
+            }
+            else if (spaceBar.isDown && keyS.isDown && keyD.isDown){// Direction bas droite + bras //
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (keyS.isDown && keyD.isDown){// Direction bas droite //
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+            // ----- Direction haut gauche ----- //
+
+        if (keyZ.isDown && keyQ.isDown){
+            if (keyZ.isDown && keyQ.isDown && invincible == true){ // Direction haut gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && cursors.left.isDown && keyZ.isDown && keyQ.isDown){ // Direction haut gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyE.isDown && keyZ.isDown && keyQ.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(-400);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (spaceBar.isDown && keyZ.isDown && keyQ.isDown){ // Direction haut gauche + bras //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player)
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (keyZ.isDown && keyQ.isDown){ // Direction haut gauche //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+
+            // ----- Direction bas gauche ----- //
+
+        if (keyS.isDown && keyQ.isDown){
+        
+            if (keyS.isDown && keyQ.isDown && invincible == true){// Direction bas gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && cursors.left.isDown && keyS.isDown && keyQ.isDown){ // Direction bas gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (keyE.isDown && keyS.isDown && keyQ.isDown){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(400);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (spaceBar.isDown && keyS.isDown && keyQ.isDown){ // Direction bas gauche + bras //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (keyS.isDown && keyQ.isDown){ // Direction bas gauche //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+        }
+        
+        else if (keyQ.isUp && keyD.isUp && keyZ.isUp && keyS.isUp && keyE.isUp){
+            player.setAcceleration(0);
+            player.setMaxVelocity(280);
+            emitter.stopFollow(player);
+            emitter2.stopFollow(player);
+        }
+
+        // ----- CONTROLE MANETTE ----- //
+
+        
+        if (this.input.gamepad.total === 0)
+        {
+            return;
+        }
+        pad = this.input.gamepad.getPad(0);
+        
+        
+        if (pad.axes.length)
+        {
+            var axisH = pad.axes[0].getValue(); // stick gauche manette sur x //
+            var axisV = pad.axes[1].getValue(); // stick gauche manette sur y //
+            player.flipX = (axisH >= -1);
+
+            // ----- Direction droite ----- //
+
+            if (axisH >= 0.1 && invincible == true){ // Direction droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setMaxVelocity(280);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0); 
+            }
+            else if (ajout_power_up == true && pad.B && axisH >= 0.1){ // direction droite + power_up //
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.A && axisH >= 0.1){
+                player.setAccelerationX(500);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true); 
+            }
+            else if (pad.X && axisH >= 0.1){ // direction droite + bras //
+                player.setAccelerationX(300);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(280);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);  
+            }
+            else if(axisH >= 0.1){ // direction droite //
+                player.anims.play('left', true);
+                player.setMaxVelocity(280);
+                player.setAccelerationX(300);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+
+                ennemi_bouteille_01.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_02.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_03.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_04.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_05.anims.play('ennemi_bouteille_anim',true);
+                ennemi_bouteille_06.anims.play('ennemi_bouteille_anim',true);
+                algues.anims.play('algues_1',true);
+                algues_2.anims.play('algues_1',true);
+                algues_3.anims.play('algues_1',true);
+                algues_4.anims.play('algues_1',true);
+                algues_5.anims.play('algues_1',true);
+                algues_6.anims.play('algues_1',true);
+                algues_7.anims.play('algues_1',true);
+                waste_monster.anims.play('waste_monster_anim',true);
+            }
+
+            // ----- Direction gauche----- //
+
+            if (axisH <= -0.1 && invincible == true){ // Direction gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && pad.B && axisH <= -0.1){ //Direction gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.A && axisH <= -0.1){
+                player.setAccelerationX(-500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (pad.X && axisH <= -0.1){ // Direction gauche + bras //
+                player.setAccelerationX(-300);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if(axisH <= -0.1){ // Direction gauche //
+                player.setAccelerationX(-300);
+                player.anims.play('right', true);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+
+
+            // ----- Direction bas ----- //
+
+            if(pad.A && axisV >= 0.8 && axisH == 0){ // Direction bas + acceleration //
+                player.setAccelerationY(400);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+            else if(axisV >= 0.8 && axisH == 0){ // Direction bas //
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                } 
+            }
+            else if (axisV >= 0.8 && axisH ==0 && invincible == true){ // Direction bas + invulné //
+                if (axisH >= 0.1){
+                    player.anims.play('hit_left', true);
+                }
+                else if (axisH <= -0.1){
+                    player.anims.play('hit_right', true);
+                }
+            }
+
+            // ----- Direction haut ----- //
+
+            if(pad.A && axisV <= -0.8 && axisH ==0){ // Direction haut + acceleration //
+                player.setAccelerationY(-400);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+                else if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+            } 
+            else if(axisV <= -0.8 && axisH ==0){ // Direction haut //
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.setSize(180, 178);
+                if (player.anims.play('right')){
+                    player.setOffset(0,0);
+                }
+                if (player.anims.play('left')){
+                    player.setOffset(0,0);
+                }
+                if (emitter2 == true){
+                    emitter.stopFollow(player);
+                    emitter2.startFollow(player);
+                }
+                else if (emitter == true){
+                    emitter.startFollow(player);
+                    emitter2.stopFollow(player);
+                }
+            }
+            else if (axisV <= -0.8 && axisH ==0 && invincible == true){ // Direction haut + invulné //
+                if (axisH <= -0.1){
+                    player.anims.play('hit_right', true);
+                }
+                else if (axisH >= 0.1){
+                    player.anims.play('hit_left', true);
+                }
+            }
+            
+
+            // ----- Direction haut droite ----- //
+
+            if (axisH >= 0.1 && axisV <=-0.3 && invincible == true){ // Direction haut droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && pad.B && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + power_up //
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.A && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(-400);
+                emitter.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
+            }
+            else if (pad.X && axisH >= 0.1 && axisV <=-0.3){ // Direction haut droite + bras //
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (axisH >= 0.1 && axisV <=-0.3){ //Direction haut droite //
+                player.setAccelerationX(300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+
+            }
+
+            // ----- Direction bas droite ----- //
+
+            if (axisH >= 0.1 && axisV >= 0.3 && invincible == true){ // Direction bas droite + invulné //
+                player.anims.play('hit_left', true);
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && pad.B && axisH >= 0.1 && axisV >= 0.3){// Direction bas droite + power_up//
+                player.anims.play('left', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.A && axisH >= 0.1 && axisV >= 0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(500);
+                player.setAccelerationY(400);
+                emitter2.startFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('left', true);  
+            }
+            else if (pad.X && axisH >= 0.1 && axisV >= 0.3){// Direction bas droite + bras //
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-95,0);
+                player.anims.play('bras_right', true);
+            }
+            else if (axisH >= 0.1 && axisV >= 0.3){// Direction bas droite //
+                player.setAccelerationX(300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.anims.play('left', true);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+
+            // ----- Direction haut gauche ----- //
+
+            if (axisH <= -0.1 && axisV <= -0.3 && invincible == true){ // Direction haut gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && pad.B && axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.A && axisH <= -0.1 && axisV <=-0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(-400);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (pad.X && axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche + bras //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player)
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (axisH <= -0.1 && axisV <=-0.3){ // Direction haut gauche //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(-200);
+                player.setMaxVelocity(280);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+
+            // ----- Direction bas gauche ----- //
+
+            if (axisH <= -0.1 && axisV >= 0.3 && invincible == true){// Direction bas gauche + invulné //
+                player.anims.play('hit_right', true);
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (ajout_power_up == true && pad.B && axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche + power_up //
+                player.anims.play('right', true);
+                player.setMaxVelocity(1500);
+                player.setVelocityX(-1500);
+                emitter.stopFollow(player);
+                emitter2.startFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            else if (pad.A && axisH <= -0.1 && axisV >= 0.3){ // Direction haut droite + acceleration de la nage //
+                player.setAccelerationX(-500);
+                player.setAccelerationY(400);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setMaxVelocity(480);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+                player.anims.play('right', true);  
+            }
+            else if (pad.X && axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche + bras //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(350, 178);
+                player.setOffset(-75,0);
+                player.anims.play('bras_left', true);
+            }
+            else if (axisH <= -0.1 && axisV >= 0.3){ // Direction bas gauche //
+                player.setAccelerationX(-300);
+                player.setAccelerationY(200);
+                player.setMaxVelocity(280);
+                player.anims.play('right', true);
+                emitter.startFollow(player);
+                emitter2.stopFollow(player);
+                player.setSize(180, 178);
+                player.setOffset(0,0);
+            }
+            if (axisV == 0 && axisH == 0 ){ // Aucune  direction donnée //
+                player.setAcceleration(0);
+                player.setMaxVelocity(280);
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player); 
+            }
+        } 
+
+        // ----- texte intro manette ----- //
+
+        if(gamepad){
+            if(pad.A){
+                texte_intro.setAlpha(0);
+            }
+        }
+    }
+    
+    // ----- Fonctions ----- //
+
+    function hitEnnemi(player){  // si on touche un ennemi sans avoir le bras d'activé //
+    
+        if(invincible == false){
+            invincible = true ;
+            playerPdv -= 1;
+            this.cameras.main.shake(200);
+            if (playerPdv == 2){
+                reparation3.destroy(true,true);
+            }
+            if (playerPdv == 1){
+                reparation2.destroy(true,true); 
+            }
+            if (playerPdv == 0){
+                reparation1.destroy(true,true);
+                player.setAlpha(0);
+                particles_power_up.emitParticleAt(player.x, player.y)
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+                text_gameOver.setAlpha(1);
+                gameOver = true;
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player);
+            }   
+        }
+    }
+
+    function hitRocher(player, playerPdv){ // mort si collision avec rocher //
+        playerPdv = 0;
+        this.cameras.main.shake(200);
+        reparation1.destroy(true,true);
+        reparation2.destroy(true,true);
+        reparation3.destroy(true,true);
+        if(playerPdv == 0 ){
+            player.setAlpha(0);
+            particles_power_up.emitParticleAt(player.x, player.y)
+            this.cameras.main.fadeOut(4000);
+            text_gameOver.setAlpha(1);
+            gameOver = true;
+            emitter.stopFollow(player);
+            emitter2.stopFollow(player);
+            rocher_01.destroy();
+            rocher_02.destroy();
+            rocher_03.destroy();
+            rocher_04.destroy();
+        }
+    }
+    
+    function combatBoss (player,waste_monster) { // combat de boss si on le touche avec notre power_ip il perd 2pv au lieu d'un //
+        if(invincible_boss == false){
+            invincible_boss = true ;
+            if(player.body.speed >= 1000){
+                waste_monster_pdv -= 2;  
+            }
+            if(gamepad){
+                if(pad.X){
+                    waste_monster_pdv -= 1;
+                }
+            }
+            else if (spaceBar.isDown){
+                waste_monster_pdv -= 1;
+            }
+            if(waste_monster_pdv == 2){
+                vie_boss_01.destroy();
+            }
+            if(waste_monster_pdv == 1){
+                vie_boss_02.destroy();
+                vie_boss_01.destroy();
+            }
+            if(waste_monster_pdv <= 0){
+                particles_sac.emitParticleAt(waste_monster.x, waste_monster.y);
+                particles_masque.emitParticleAt(waste_monster.x, waste_monster.y);
+                waste_monster.destroy();
+                barre_de_vie.destroy();
+                vie_boss_03.destroy();
+                texte_win.setAlpha(1);
+                this.physics.pause();
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+            }
+        }
+    }
+
+    function restart (scene){ // si on meurt la scene restart //
+        if (gameOver == true){
+            this.scene.restart();
+            gameOver = false;
+            ajout_power_up = false;
+            text_gameOver.setAlpha(0);
+            playerPdv = 3;
+            waste_monster_pdv = 3;
+            etat_ennemi_bouteille_01 = true;
+            etat_ennemi_bouteille_02 = true;
+            etat_ennemi_bouteille_03 = true;
+            etat_ennemi_bouteille_04 = true;
+            etat_ennemi_bouteille_05 = true;
+            etat_ennemi_bouteille_06 = true;
+        }
+    }
+
+    function tremblement(player,waste_monster_silhouette){// tremblement lors du passage du monstre (silhouette) //
+        if (waste_monster_silhouette.x >=9000){ 
+            this.cameras.main.shake(40);
+        }
+    }
+
+    function hitPowerUp (player, power_up){ // attraper power_up //
+        if (gamepad){
+            if(pad.X){
+                power_up.destroy(true,true);
+                particles_power_up.emitParticleAt(power_up.x, power_up.y);
+                ajout_power_up = true;
+                textTuto_04.setAlpha(1);
+            }
+        }
+        else if (spaceBar.isDown){
+            power_up.destroy(true,true);
+            particles_power_up.emitParticleAt(power_up.x, power_up.y);
+            ajout_power_up = true;
+            textTuto_04.setAlpha(1);
+        }
+    }
+
+
+// ----- function kill ennemi ----- //
+
+    function kill_ennemi_01 (player){ // pour éliminer les ennemi "bouteilles" //
+        if (gamepad){
+            if(pad.X && etat_ennemi_bouteille_01 == true){
+                ennemi_bouteille_01.destroy(true, true);
+                etat_ennemi_bouteille_01 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_01.x,ennemi_bouteille_01.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_01 == true){
+            ennemi_bouteille_01.destroy(true, true);
+            etat_ennemi_bouteille_01 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_01.x,ennemi_bouteille_01.y);   
+        }
+    }
+    
+    function kill_ennemi_02 (player){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_02 == true){
+                ennemi_bouteille_02.destroy(true, true);
+                etat_ennemi_bouteille_02 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_02.x,ennemi_bouteille_02.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_02 == true){
+            ennemi_bouteille_02.destroy(true, true);
+            etat_ennemi_bouteille_02 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_02.x,ennemi_bouteille_02.y);   
+        }
+    }
+    
+    function kill_ennemi_03 (player){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_03 == true){
+                ennemi_bouteille_03.destroy(true, true);
+                etat_ennemi_bouteille_03 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_03.x,ennemi_bouteille_03.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_03 == true){
+            ennemi_bouteille_03.destroy(true, true);
+            etat_ennemi_bouteille_03 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_03.x,ennemi_bouteille_03.y);   
+        }
+    }
+    
+    function kill_ennemi_04 (player){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_04 == true){
+                ennemi_bouteille_04.destroy(true, true);
+                etat_ennemi_bouteille_04 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_04.x,ennemi_bouteille_04.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_04 == true){
+            ennemi_bouteille_04.destroy(true, true);
+            etat_ennemi_bouteille_04 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_04.x,ennemi_bouteille_04.y);   
+        }
+    }
+
+    function kill_ennemi_05 (player){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_05 == true){
+                ennemi_bouteille_05.destroy(true, true);
+                etat_ennemi_bouteille_05 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_05.x,ennemi_bouteille_05.y);   
+            }
+        }
+        else if (spaceBar.isDown && etat_ennemi_bouteille_05 == true){
+            ennemi_bouteille_05.destroy(true, true);
+            etat_ennemi_bouteille_05 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_05.x,ennemi_bouteille_05.y);   
+        }
+    }
+
+    function kill_ennemi_06 (player){
+        if (gamepad){
+            if (pad.X && etat_ennemi_bouteille_06 == true){
+                ennemi_bouteille_06.destroy(true, true);
+                etat_ennemi_bouteille_06 = false;
+                particles_power_up.emitParticleAt(ennemi_bouteille_06.x,ennemi_bouteille_06.y);   
+            }
+        }
+        else if (spaceBar.isDown&& etat_ennemi_bouteille_06 == true){
+            ennemi_bouteille_06.destroy(true, true);
+            etat_ennemi_bouteille_06 = false;
+            particles_power_up.emitParticleAt(ennemi_bouteille_06.x,ennemi_bouteille_06.y);   
+        }
+    }
+
+    function hitGrotte(player, grotte){ 
+    
+        if(invincible == false && player.body.speed >= 500){ // en cas de vitesse trop élevée et de collision avec la grotte, le joueur perd une vie //
+            invincible = true ;
+            playerPdv -= 1;
+            this.cameras.main.shake(200);
+            if (playerPdv == 2){
+                reparation3.destroy(true,true);
+            }
+            if (playerPdv == 1){
+                reparation2.destroy(true,true); 
+            }
+            if (playerPdv == 0){
+                reparation1.destroy(true,true);
+                player.setAlpha(0);
+                particles_power_up.emitParticleAt(player.x, player.y)
+                this.cameras.main.fade(4000, 0, 0, 0, false, this.fadeCallback);
+                text_gameOver.setAlpha(1);
+                gameOver = true;
+                emitter.stopFollow(player);
+                emitter2.stopFollow(player);
+            }  
+        }
+    }
+
+</script>
+
+</body>
+</html>
